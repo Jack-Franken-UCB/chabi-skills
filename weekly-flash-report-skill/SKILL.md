@@ -65,6 +65,11 @@ The date range spans from `ws-21d` through `ws+6d` (the Sunday ending the most r
 - For `TIME_PERIOD_TYPE = 'day'`: AMOUNT is in rows where `TIME_PERIOD_TO_DATE = true`
 This is counter-intuitive but verified. Getting this wrong will return all zeros.
 
+**Critical note about VOIDED orders**:
+- ALL queries against ORDER_METRICS must include `AND VOIDED = false`
+- Voided orders carry $0 in AMOUNT but still count in ORDER_COUNT
+- Failing to filter voids inflates order counts, deflates avg ticket, and skews SST%
+
 ### Query 1 — Weekly Sales (4 weeks + PY)
 
 **Important**: Use `TIME_PERIOD_TYPE = 'week'` with `TIME_PERIOD_TO_DATE = false`.
@@ -86,6 +91,7 @@ WHERE RESTAURANT_LOCATION = '{location}'
   AND TIME_PERIOD_TYPE = 'week'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
   AND TIME_PERIOD_TO_DATE = false
+  AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
 ```
@@ -104,6 +110,7 @@ WHERE RESTAURANT_LOCATION = '{location}'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
   AND DINING_CATEGORY = 'Catering'
   AND TIME_PERIOD_TO_DATE = true
+  AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
 ```
@@ -123,6 +130,7 @@ WHERE RESTAURANT_LOCATION = '{location}'
                             AND DATEADD('week', -52, '{ws_plus_6}'::DATE)
   AND DINING_CATEGORY = 'Catering'
   AND TIME_PERIOD_TO_DATE = true
+  AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
 ```
@@ -207,6 +215,7 @@ WHERE RESTAURANT_LOCATION = '{location}'
   AND TIME_PERIOD_TYPE = 'day'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
   AND TIME_PERIOD_TO_DATE = true
+  AND VOIDED = false
 GROUP BY 1
 ORDER BY 1
 ```
@@ -440,10 +449,18 @@ The CSS @page directive in the HTML controls the layout:
 
 ### 6c. Deliver the PDF
 
-Copy the PDF to the outputs directory and provide the user a download link:
+The output filename must follow this convention, with all words title-cased:
+```
+Weekly Flash - {Location} - {date_range}.pdf
+```
+where `{date_range}` is the short week range, e.g. `Feb 9 – 15, 2026`.
+
 ```python
 import shutil
-output_path = f"/mnt/user-data/outputs/weekly_flash_{location_slug}.pdf"
+week_end = week_start + timedelta(days=6)
+date_range = f"{week_start.strftime('%b %-d')} – {week_end.strftime('%-d')}, {week_end.year}"
+filename = f"Weekly Flash - {location} - {date_range}".title() + ".pdf"
+output_path = f"/mnt/user-data/outputs/{filename}"
 shutil.copy(pdf_path, output_path)
 ```
 
