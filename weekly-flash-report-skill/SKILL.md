@@ -489,21 +489,52 @@ else:
     kpi_suffix = "vs T4W Avg"
 ```
 
+### Labor KPI Card Badge — vs Guide %
+
+The Labor % KPI card badge shows **actual hours as a percentage of guideline hours**
+for the current week. This tells the GM at a glance whether they ran over or under
+the labor guideline.
+
+```python
+cw_guide_total = week_guidelines[WS]['total']
+if cw_guide_total > 0:
+    labor_vs_guide_pct = (cw_labor_hrs / cw_guide_total) * 100
+    labor_cls = "positive" if labor_vs_guide_pct <= 100 else "negative"
+    labor_arrow = "&#9660;" if labor_vs_guide_pct <= 100 else "&#9650;"
+    labor_badge_text = f"{labor_vs_guide_pct:.1f}% of Guide"
+else:
+    labor_cls = "neutral"
+    labor_arrow = ""
+    labor_badge_text = "N/A"
+```
+
 ## Step 4: Generate the GM Message
 
-Write a concise paragraph (4–6 sentences) for the General Manager. Cover:
+Write a concise, **insight-driven** paragraph (4–6 sentences) for the General Manager.
+The GM can already see all the numbers in the report — the message should provide
+**analysis, context, and actionable recommendations** they can't get from the tables alone.
 
-1. **Sales headline** — Total sales, SSS% direction, recent trend context
-   - For PY stores: "up/down X% vs prior year"
-   - For new stores: "up/down X% vs trailing 4-week avg"
-2. **Order growth** — SST% (or "vs T4W" for new stores), traffic direction
-3. **Avg ticket** — Current vs comparison baseline
-4. **Labor** — Labor %, improvement vs prior week, actual vs guideline hours
-5. **Over/under days** — Days that ran >2hrs over or under guideline
-6. **Reviews** — Highlight scores from Google/Ovation/Yelp if available
-7. **Closing** — Brief encouraging call to action
+**Do NOT** simply restate figures already visible in the report (e.g., "Sales were $X,
+orders were Y, labor was Z%"). Instead, focus on:
 
-Tone: professional, concise, data-driven. Name actual numbers. One paragraph.
+1. **Sales trend & momentum** — Analyze the 4-week trajectory, not just the current week.
+   Count consecutive weeks of growth/decline. Highlight WoW inflections ("nice rebound
+   after a softer week" or "second straight week of decline — investigate"). Only mention
+   vs PY/T4W if there's a notable story.
+2. **Labor coaching callout** — Focus on actionable specifics: which days were most
+   over/under guideline, whether to tighten scheduling on specific days, and if
+   understaffing risks guest experience. Frame as a concrete action ("review cuts on
+   Friday" not "labor was +15 hrs over guideline").
+3. **Revenue per labor hour direction** — Compare WoW to flag efficiency changes. Only
+   mention if the change is meaningful (>2% WoW).
+4. **Review flags** — Only call out reviews if there's something **actionable**: a source
+   below 4.0 that needs attention, or sustained excellence worth reinforcing. Don't
+   just list scores already in the reviews table.
+5. **Forward-looking priority** — Close with a specific focus area for the coming week
+   based on what the data reveals, not a generic "keep it up."
+
+Tone: direct, coaching-oriented, concise. The GM should finish reading and know exactly
+what to prioritize this week.
 
 ## Step 5: Format & Pill Helpers
 
