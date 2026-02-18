@@ -220,31 +220,12 @@ GROUP BY 1
 ORDER BY 1
 ```
 
-### Query 7 — Scheduled Hours from 7shifts (all 4 weeks)
-
-Scheduled hours come from the 7shifts scheduling system, not from LABOR_REPORTS.
-The raw data is in `SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES`.
-Multiple file versions may exist per date, so you must deduplicate by selecting only
-the latest file per restaurant+date (using `MAX_BY(_file, _modified)`).
-
-**Critical**: Use the latest-file-per-date approach (not shift-level dedup). Each
-7shifts file export is a complete snapshot of the schedule for that date. Deduping
-by individual shift fields (in_time, out_time, role) across all files retains stale
-shifts from older exports when schedules change, inflating hours by ~20%.
-
-Exclude management roles (GM, AM, KM) since their hours are not included in the
-guideline calculation.
+### Query 7 — Scheduled Hours (from 7shifts)
 
 ```sql
 WITH base AS (
-  SELECT
-    d._file,
-    d._modified,
-    d.date,
-    d.location,
-    d.regular_hours,
-    d.role,
-    m.RESTAURANT_NUMBER
+  SELECT d._file, d._modified, d.date, d.location, d.regular_hours, d.role,
+         m.RESTAURANT_NUMBER
   FROM SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES d
   JOIN RESTAURANT_MAPPING.RESTAURANT_MAPPING_TABLE m
     ON d.location = m.SEVEN_SHIFTS_LOCATION
@@ -255,50 +236,80 @@ WITH base AS (
     AND d.role NOT IN ('General Manager','Assistant Manager','Kitchen Manager')
 ),
 latest_files AS (
-  SELECT
-    RESTAURANT_NUMBER,
-    date,
-    MAX_BY(_file, _modified) AS _file
-  FROM base
-  GROUP BY 1, 2
+  SELECT RESTAURANT_NUMBER, date, MAX_BY(_file, _modified) AS _file
+  FROM base GROUP BY 1, 2
 )
-SELECT
-  b.date AS report_date,
-  SUM(b.regular_hours) AS scheduled_hours
+SELECT b.date AS report_date, SUM(b.regular_hours) AS scheduled_hours
 FROM base b
 INNER JOIN latest_files lf
   ON lf.RESTAURANT_NUMBER = b.RESTAURANT_NUMBER
-  AND lf.date = b.date
-  AND lf._file = b._file
-GROUP BY 1
-ORDER BY 1
+ AND lf.date = b.date
+ AND lf._file = b._file
+GROUP BY 1 ORDER BY 1
 ```
 
-**Note**: Mondays typically have no scheduled hours (closed day). If a day is missing
-from the results, treat scheduled hours as 0 for that day.
+### Query 8 — AGM Hours
 
-## Step 2: Compute Labor Guidelines
+```sql
+SELECT store_listing AS location,
+       start_date::date AS start_date,
+       end_date::date AS end_date,
+       daily_hours,
+       weekly_hours
+FROM LABOR_AGM_HOURS.LABOR_AGM_HOURS_TABLE
+WHERE store_listing = '{location}'
+ORDER BY start_date
+```
 
-The labor guideline system allocates weekly target hours based on weekly net sales,
-then distributes them across days proportionally to each day's sales volume with
-day-of-week adjustments.
+### Query 9 — Labor Guidelines Table
 
-### Guideline Lookup Table
+**Important**: Pull the full latest guidelines from the database instead of hardcoding.
+The table extends well beyond $60K for high-volume locations like College Station ($130K+/week).
+Hardcoding a partial table will cap guidelines at 828 hours, severely undercounting.
+
+```sql
+WITH guidelines AS (
+  SELECT
+    weekly_net_sales_threshold AS threshold,
+    weekly_total_hours AS hours,
+    start_date::date AS start_date
+  FROM LABOR_GUIDELINES.LABOR_GUIDELINES_TABLE
+  WHERE brand = 'Fuego Tortilla Grill'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY weekly_net_sales_threshold
+    ORDER BY start_date DESC
+  ) = 1
+)
+SELECT threshold, hours FROM guidelines
+WHERE hours > 0
+  AND (threshold % 5000 = 0 OR threshold IN (2100, 18800))
+ORDER BY threshold
+```
+
+This returns ~80 rows at $5K intervals. Build a dict and interpolate between thresholds.
+Alternatively, embed the known breakpoints:
 
 ```python
 GUIDELINES_TABLE = {
-    0: 0, 2100: 326, 20000: 345, 25000: 416, 26000: 431, 27000: 445,
-    28000: 459, 29000: 474, 30000: 488, 35000: 559, 40000: 631,
-    45000: 702, 50000: 744, 55000: 786, 60000: 828
+    0: 0, 2100: 326, 18800: 328, 20000: 345,
+    25000: 416, 30000: 488, 35000: 559, 40000: 631, 45000: 702,
+    50000: 744, 55000: 786, 60000: 828, 65000: 870, 70000: 912,
+    75000: 953, 80000: 995, 85000: 1037, 90000: 1079, 95000: 1120,
+    100000: 1162, 105000: 1204, 110000: 1246, 115000: 1287, 120000: 1329,
+    125000: 1371, 130000: 1413, 135000: 1454, 140000: 1496, 145000: 1538,
+    150000: 1580, 155000: 1621, 160000: 1663, 165000: 1705, 170000: 1747,
+    175000: 1788, 180000: 1830, 185000: 1872, 190000: 1914, 195000: 1956,
+    200000: 1997,
 }
 ```
 
-### Guideline Lookup — Interpolation
+## Step 2: Compute Labor Guidelines
+
+### Guideline Lookup (interpolation)
 
 **Important**: Use linear interpolation between thresholds, NOT floor lookup.
 The corporate dashboard interpolates, so floor lookup will undercount by ~5-10 hours
-per week. Do NOT subtract AGM hours — the corporate system does not apply an AGM
-adjustment.
+per week.
 
 ```python
 def lookup_guide(net_sales):
@@ -325,51 +336,113 @@ After proportional distribution, add:
 |-----|-----|-----|-----|-----|-----|-----|-----|
 | Adj | 0 | +8 | +3 | +3 | +3 | +3 | -20 |
 
-### Distribution Algorithm
+### Distribution Algorithm (with AGM adjustment)
+
+**Critical**: This algorithm uses **full proportional allocation** — the entire
+`weekly_total_hours` is distributed by weight. This matches the updated Card 274 SQL.
+Do NOT use a "base + extra" split (where base = 54/day × days_open), as that causes
+non-operating days to leak hours in partial weeks.
+
+The weighting formula uses a linear ramp from $0 with a knee at $9K and diminishing
+returns above (multiplier 0.80). This is different from the old Card 274 formula that
+only weighted sales above $3K base.
 
 ```python
-def compute_daily_guideline(week_start, daily_sales_dict):
-    rate = 54 / 3000
+def compute_daily_guideline(week_start, daily_sales_dict, location=None):
+    rate = 54 / 3000  # hours per dollar for weighting
     days = [week_start + timedelta(days=i) for i in range(7)]
 
-    # Monday (day 0 of week) gets 0 guideline hours
+    # Compute raw weights — linear from $0, knee at $9K, diminished above
     raw = []
     for d in days:
-        if d.weekday() == 0:  # Monday
+        if d.weekday() == 0:  # Monday (Fuego closed)
             raw.append(0)
         else:
             s = daily_sales_dict.get(d, 0)
             if s <= 0:
                 raw.append(0)
-            elif s <= 3000:
-                raw.append(s * rate)
             elif s <= 9000:
-                raw.append(54 + (s - 3000) * rate)
+                raw.append(s * rate)
             else:
-                raw.append(54 + 6000 * rate + (s - 9000) * rate * 0.80)
+                raw.append(9000 * rate + (s - 9000) * rate * 0.80)
 
-    # Week net sales and total guideline — NO AGM subtraction
     week_net = sum(daily_sales_dict.get(d, 0) for d in days)
     total_guide = lookup_guide(week_net)
     total_raw = sum(raw) or 1
 
     DOW_ADJ = {0: 0, 1: 8, 2: 3, 3: 3, 4: 3, 5: 3, 6: -20}
     result = {}
+    agm_total = 0
     for i, d in enumerate(days):
-        if d.weekday() == 0:
+        day_sales = daily_sales_dict.get(d, 0)
+        if d.weekday() == 0 or day_sales <= 0:
+            # Monday or no-sales day: zero guideline (no base, no DOW adj, no AGM)
             result[d] = 0
         else:
-            result[d] = max(0, (raw[i] / total_raw) * total_guide + DOW_ADJ.get(d.weekday(), 0))
-    return result, total_guide, week_net
+            base = max(0, (raw[i] / total_raw) * total_guide + DOW_ADJ.get(d.weekday(), 0))
+            agm_hrs = get_agm_daily_hours(location, d) if location else 0
+            result[d] = base + agm_hrs
+            agm_total += agm_hrs
+    return result, total_guide + agm_total, week_net
 ```
 
-## Step 3: Generate the GM Message
+### Key design decisions in the guideline algorithm
+
+1. **Full proportional allocation**: `(weight / sum_weights) * weekly_total_hours`
+   distributes the FULL lookup amount to operating days only. No flat base per day.
+
+2. **Linear weighting from $0**: The weight formula ramps linearly from $0 (not
+   from $3K). This smooths distribution across days. The knee at $9K and 0.80
+   multiplier above provide diminishing returns for very high-sales days.
+
+3. **Zero-sales guard**: If `day_sales <= 0`, guideline = 0 for that day — no base
+   hours, no DOW adjustment, no AGM hours. This matters for partial opening weeks
+   at new locations (e.g., Fayetteville's first week).
+
+4. **AGM hours added per operating day**: AGM daily hours from `LABOR_AGM_HOURS_TABLE`
+   are added ONLY to days with sales > 0. `DAILY_HOURS = WEEKLY_HOURS / 6` (Fuego
+   closed Mondays).
+
+**Validation reference points** (Feb 9, 2026 week):
+- Burleson: ~523 hrs (no AGM)
+- College Station: ~1,485 hrs (includes +50 AGM weekly)
+- Fayetteville: ~828 hrs (includes +200 AGM weekly)
+- San Antonio: ~714 hrs (no AGM)
+- San Marcos: ~702 hrs (includes -50 AGM weekly)
+- Waco: ~748 hrs (no AGM)
+
+## Step 3: KPI Cards — Prior Year vs Trailing 4-Week Average
+
+For locations **with prior year data**, compute SSS%, SST%, and ticket change vs PY
+as normal (badge text: "vs PY").
+
+For locations **without prior year data** (new stores where `amount_py == 0`), compare
+the current week against the **trailing 4-week average** of the prior 3 weeks in the
+data range. Badge text: "vs T4W Avg".
+
+```python
+if has_py:
+    sss = pct_chg(cw_amount, cw_py)
+    sst = pct_chg(cw_orders, cw_orders_py)
+    kpi_suffix = "vs PY"
+else:
+    prior_weeks = [w for w in week_starts[1:] if w in loc_weekly]
+    trail_amt = sum(loc_weekly[w]["amount"] for w in prior_weeks) / len(prior_weeks)
+    trail_orders = sum(loc_weekly[w]["orders"] for w in prior_weeks) / len(prior_weeks)
+    sss = pct_chg(cw_amount, trail_amt)
+    sst = pct_chg(cw_orders, trail_orders)
+    kpi_suffix = "vs T4W Avg"
+```
+
+## Step 4: Generate the GM Message
 
 Write a concise paragraph (4–6 sentences) for the General Manager. Cover:
 
 1. **Sales headline** — Total sales, SSS% direction, recent trend context
-2. **Order growth** — SST%, traffic direction
-3. **Avg ticket** — Current vs PY, upsell focus if below
+   - For PY stores: "up/down X% vs prior year"
+   - For new stores: "up/down X% vs trailing 4-week avg"
+2. **Order growth** — SST% (or "vs T4W" for new stores), traffic direction
+3. **Avg ticket** — Current vs comparison baseline
 4. **Labor** — Labor %, improvement vs prior week, actual vs guideline hours
 5. **Over/under days** — Days that ran >2hrs over or under guideline
 6. **Reviews** — Highlight scores from Google/Ovation/Yelp if available
@@ -377,14 +450,14 @@ Write a concise paragraph (4–6 sentences) for the General Manager. Cover:
 
 Tone: professional, concise, data-driven. Name actual numbers. One paragraph.
 
-## Step 4: Format & Pill Helpers
+## Step 5: Format & Pill Helpers
 
 Read `references/helpers.md` for the complete set of Python formatting helper functions
 including: `fm()`, `fn()`, `fp()`, `pct_chg()`, `pill_sss()`, `pill_labor_diff()`,
 `pill_labor_ratio()`, `pill_hrs_vs_sch()`, `pill_labor_pct()`, `pill_rating()`,
 `kpi_badge()`, `wk_short()`, `wk_long()`.
 
-## Step 5: Build the HTML
+## Step 6: Build the HTML
 
 Read `references/html_template.md` for the complete CSS and HTML structure. The design
 is the S3 "Teal Thread" variant — original Fuego tan palette with teal accents threading
@@ -402,12 +475,12 @@ handles all spacing.
 
 **No box shadows**: Sections and KPI cards have no `box-shadow` for a cleaner look.
 
-## Step 6: Output as PDF
+## Step 7: Output as PDF
 
 The report is generated as HTML first (to leverage the full CSS design), then converted
 to a pixel-perfect PDF using headless Chrome.
 
-### 6a. Save the intermediate HTML
+### 7a. Save the intermediate HTML
 
 Save the generated HTML to a temporary file in the working directory:
 ```python
@@ -417,7 +490,7 @@ with open(html_path, "w") as f:
 ```
 where `location_slug` = location name lowercased, spaces replaced by underscores.
 
-### 6b. Convert HTML to PDF with headless Chrome
+### 7b. Convert HTML to PDF with headless Chrome
 
 Use headless Chrome directly (not Playwright) to print the HTML to PDF. The CSS @page
 directive handles page size, orientation, and margins, so no API-level options are
@@ -447,7 +520,7 @@ The CSS @page directive in the HTML controls the layout:
 - The CSS `@page { size: A4 portrait; margin: 0.2in; }` controls page size and margins
   directly — tight margins maximize space for the data-dense tables
 
-### 6c. Deliver the PDF
+### 7c. Deliver the PDF
 
 The output filename must follow this convention, with all words title-cased:
 ```
