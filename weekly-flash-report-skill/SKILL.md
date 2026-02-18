@@ -60,10 +60,13 @@ The report needs 4 weeks of data ending on the most recent completed Sunday.
 Calculate the 4 week-start Mondays: `ws` (most recent), `ws-7d`, `ws-14d`, `ws-21d`.
 The date range spans from `ws-21d` through `ws+6d` (the Sunday ending the most recent week).
 
-**Critical note about ORDER_METRICS TIME_PERIOD_TO_DATE**:
-- For `TIME_PERIOD_TYPE = 'week'`: AMOUNT is in rows where `TIME_PERIOD_TO_DATE = false`
-- For `TIME_PERIOD_TYPE = 'day'`: AMOUNT is in rows where `TIME_PERIOD_TO_DATE = true`
-This is counter-intuitive but verified. Getting this wrong will return all zeros.
+**Critical note about ORDER_METRICS TIME_PERIOD_TYPE for daily data**:
+- Prefer `TIME_PERIOD_TYPE = 'day_dow'` for all daily queries. It does NOT require
+  a `TIME_PERIOD_TO_DATE` filter.
+- The `'day'` period type can silently drop low-sales days (e.g., a $160 day absent
+  from `'day'` but present in `'day_dow'`). This causes partial-week detection to fail
+  and guideline hours to be severely miscalculated.
+- For `TIME_PERIOD_TYPE = 'week'`: use `TIME_PERIOD_TO_DATE = false` (unchanged).
 
 **Critical note about VOIDED orders**:
 - ALL queries against ORDER_METRICS must include `AND VOIDED = false`
@@ -74,7 +77,7 @@ This is counter-intuitive but verified. Getting this wrong will return all zeros
 
 **Important**: Use `TIME_PERIOD_TYPE = 'week'` with `TIME_PERIOD_TO_DATE = false`.
 In ORDER_METRICS, weekly aggregates live in the `week` period type with `to_date = false`.
-(For daily granularity, use `TIME_PERIOD_TYPE = 'day'` with `TIME_PERIOD_TO_DATE = true`.)
+(For daily granularity, always use `TIME_PERIOD_TYPE = 'day_dow'` — see general note above.)
 
 ```sql
 SELECT
@@ -106,10 +109,9 @@ SELECT
 FROM CHABI_DBT.ORDER_METRICS
 WHERE RESTAURANT_LOCATION = '{location}'
   AND BRAND = 'fuego-tortilla-grill'
-  AND TIME_PERIOD_TYPE = 'day'
+  AND TIME_PERIOD_TYPE = 'day_dow'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
   AND DINING_CATEGORY = 'Catering'
-  AND TIME_PERIOD_TO_DATE = true
   AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
@@ -125,11 +127,10 @@ SELECT
 FROM CHABI_DBT.ORDER_METRICS
 WHERE RESTAURANT_LOCATION = '{location}'
   AND BRAND = 'fuego-tortilla-grill'
-  AND TIME_PERIOD_TYPE = 'day'
+  AND TIME_PERIOD_TYPE = 'day_dow'
   AND TIME_PERIOD_VALUE BETWEEN DATEADD('week', -52, '{ws_minus_21}'::DATE)
                             AND DATEADD('week', -52, '{ws_plus_6}'::DATE)
   AND DINING_CATEGORY = 'Catering'
-  AND TIME_PERIOD_TO_DATE = true
   AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
@@ -181,9 +182,9 @@ ORDER BY 1 DESC, 2
 ### Query 5 — Daily Labor (payable hours + pay, all 4 weeks)
 
 **Important**: Use `PAYABLE_HOURS` (not `TOTAL_HOURS`) from `LABOR_METRICS` with
-`TIME_PERIOD_TYPE = 'day'` and `TIME_PERIOD_TO_DATE = true`. PAYABLE_HOURS excludes
-unpaid break time and matches the corporate labor dashboard exactly. Using TOTAL_HOURS
-from LABOR_REPORTS will overcount by ~2% due to included break time.
+`TIME_PERIOD_TYPE = 'day_dow'`. PAYABLE_HOURS excludes unpaid break time and matches
+the corporate labor dashboard exactly. Using TOTAL_HOURS from LABOR_REPORTS will
+overcount by ~2% due to included break time.
 
 ```sql
 SELECT
@@ -193,28 +194,27 @@ SELECT
 FROM CHABI_DBT.LABOR_METRICS
 WHERE RESTAURANT_LOCATION = '{location}'
   AND BRAND = 'fuego-tortilla-grill'
-  AND TIME_PERIOD_TYPE = 'day'
+  AND TIME_PERIOD_TYPE = 'day_dow'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
-  AND TIME_PERIOD_TO_DATE = true
 GROUP BY 1
 ORDER BY 1
 ```
 
 ### Query 6 — Daily Sales (for guideline calculation)
 
-**Important**: Use `TIME_PERIOD_TO_DATE = true` for daily granularity (this is where
-AMOUNT lives for day-level rows in ORDER_METRICS).
+**Important**: Use `TIME_PERIOD_TYPE = 'day_dow'` (NOT `'day'`). The `day` type can
+miss low-sales days (e.g., Fayetteville Tue $160 was absent from `day` results but
+present in `day_dow`). `day_dow` does not require a `TIME_PERIOD_TO_DATE` filter.
 
 ```sql
 SELECT
   TIME_PERIOD_VALUE AS report_date,
-  SUM(AMOUNT) AS amount
+  SUM(NET_AMOUNT) AS amount
 FROM CHABI_DBT.ORDER_METRICS
 WHERE RESTAURANT_LOCATION = '{location}'
   AND BRAND = 'fuego-tortilla-grill'
-  AND TIME_PERIOD_TYPE = 'day'
+  AND TIME_PERIOD_TYPE = 'day_dow'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
-  AND TIME_PERIOD_TO_DATE = true
   AND VOIDED = false
 GROUP BY 1
 ORDER BY 1
@@ -344,78 +344,125 @@ After proportional distribution, add:
 
 ### Distribution Algorithm (with AGM adjustment)
 
-**Critical**: This algorithm uses **full proportional allocation** — the entire
-`weekly_total_hours` is distributed by weight. This matches the updated Card 274 SQL.
-Do NOT use a "base + extra" split (where base = 54/day × days_open), as that causes
-non-operating days to leak hours in partial weeks.
+Two modes depending on whether the week is complete:
 
-The weighting formula uses a linear ramp from $0 with a knee at $9K and diminishing
-returns above (multiplier 0.80). This is different from the old Card 274 formula that
-only weighted sales above $3K base.
+#### PARTIAL WEEK (`days_with_sales < days_open`)
+
+Triggered by store closures (e.g., MLK weekend, weather, new store soft-open)
+where the number of days with sales > 0 is less than `days_open` (6 for Fuego).
+
+- Each operating day's sales is projected to a full week: `projected_weekly = daily_sales × days_open`
+- Look up guideline hours for that projected weekly sales independently per day
+- Daily allocation = `weekly_total_hours / days_open` (even split)
+- **Zero-lookup guard**: if projected sales too low for any guideline (lookup = 0),
+  the day gets **0 total hours** — no DOW adjustment, no AGM either
+- DOW + AGM adjustments applied only to days with lookup > 0
+
+```python
+# Partial week example — Burleson Jan 19 (5 of 6 days operating):
+# Tue $3,299 × 6 = $19,792 → lookup 341 → 341/6 = 56.8 + DOW(8) = 64.8
+# Sat $18.75 × 6 = $112.50 → lookup 0   → 0 (no DOW, no AGM)
+```
+
+#### FULL WEEK (`days_with_sales >= days_open`)
+
+Uses **full proportional allocation** — the entire `weekly_total_hours` is
+distributed by weight. This matches the updated Card 274 SQL.
 
 ```python
 def compute_daily_guideline(week_start, daily_sales_dict, location=None):
+    DAYS_OPEN = 6  # Fuego closed Mondays
+    DOW_ADJ = {0: 0, 1: 8, 2: 3, 3: 3, 4: 3, 5: 3, 6: -20}
     rate = 54 / 3000  # hours per dollar for weighting
     days = [week_start + timedelta(days=i) for i in range(7)]
 
-    # Compute raw weights — linear from $0, knee at $9K, diminished above
-    raw = []
-    for d in days:
-        if d.weekday() == 0:  # Monday (Fuego closed)
-            raw.append(0)
-        else:
-            s = daily_sales_dict.get(d, 0)
-            if s <= 0:
-                raw.append(0)
-            elif s <= 9000:
-                raw.append(s * rate)
-            else:
-                raw.append(9000 * rate + (s - 9000) * rate * 0.80)
-
+    days_with_sales = sum(1 for d in days if daily_sales_dict.get(d, 0) > 0)
+    is_partial = days_with_sales < DAYS_OPEN
     week_net = sum(daily_sales_dict.get(d, 0) for d in days)
-    total_guide = lookup_guide(week_net)
-    total_raw = sum(raw) or 1
 
-    DOW_ADJ = {0: 0, 1: 8, 2: 3, 3: 3, 4: 3, 5: 3, 6: -20}
     result = {}
     agm_total = 0
-    for i, d in enumerate(days):
-        day_sales = daily_sales_dict.get(d, 0)
-        if d.weekday() == 0 or day_sales <= 0:
-            # Monday or no-sales day: zero guideline (no base, no DOW adj, no AGM)
-            result[d] = 0
-        else:
-            base = max(0, (raw[i] / total_raw) * total_guide + DOW_ADJ.get(d.weekday(), 0))
-            agm_hrs = get_agm_daily_hours(location, d) if location else 0
-            result[d] = base + agm_hrs
-            agm_total += agm_hrs
-    return result, total_guide + agm_total, week_net
+
+    if is_partial:
+        for d in days:
+            day_sales = daily_sales_dict.get(d, 0)
+            if d.weekday() == 0 or day_sales <= 0:
+                result[d] = 0
+            else:
+                projected_weekly = day_sales * DAYS_OPEN
+                day_lookup = lookup_guide(projected_weekly)
+                if day_lookup <= 0:
+                    result[d] = 0  # No DOW or AGM when lookup = 0
+                else:
+                    daily_hrs = day_lookup / DAYS_OPEN
+                    agm_hrs = get_agm_daily_hours(location, d) if location else 0
+                    result[d] = daily_hrs + DOW_ADJ.get(d.weekday(), 0) + agm_hrs
+                    agm_total += agm_hrs
+    else:
+        total_guide = lookup_guide(week_net)
+        raw = []
+        for d in days:
+            if d.weekday() == 0:
+                raw.append(0)
+            else:
+                s = daily_sales_dict.get(d, 0)
+                if s <= 0: raw.append(0)
+                elif s <= 9000: raw.append(s * rate)
+                else: raw.append(9000 * rate + (s - 9000) * rate * 0.80)
+        total_raw = sum(raw) or 1
+        for i, d in enumerate(days):
+            day_sales = daily_sales_dict.get(d, 0)
+            if d.weekday() == 0 or day_sales <= 0:
+                result[d] = 0
+            else:
+                base = (raw[i] / total_raw) * total_guide + DOW_ADJ.get(d.weekday(), 0)
+                agm_hrs = get_agm_daily_hours(location, d) if location else 0
+                result[d] = base + agm_hrs
+                agm_total += agm_hrs
+
+    guide_total = sum(result.values())
+    return result, guide_total, week_net
 ```
 
 ### Key design decisions in the guideline algorithm
 
-1. **Full proportional allocation**: `(weight / sum_weights) * weekly_total_hours`
+1. **Partial vs full week detection**: Count days with sales > 0. If fewer than
+   `days_open` (6 for Fuego), use per-day projection. Otherwise full proportional.
+
+2. **Partial week per-day projection**: Each day projected independently to a full
+   week (`daily_sales × days_open`), guideline looked up per that projection, then
+   split evenly (`weekly_total_hours / days_open`). If the lookup returns 0 (projected
+   sales below minimum threshold ~$2,100), the day gets 0 total — no DOW, no AGM.
+
+3. **Full proportional allocation**: `(weight / sum_weights) * weekly_total_hours`
    distributes the FULL lookup amount to operating days only. No flat base per day.
 
-2. **Linear weighting from $0**: The weight formula ramps linearly from $0 (not
+4. **Linear weighting from $0**: The weight formula ramps linearly from $0 (not
    from $3K). This smooths distribution across days. The knee at $9K and 0.80
    multiplier above provide diminishing returns for very high-sales days.
 
-3. **Zero-sales guard**: If `day_sales <= 0`, guideline = 0 for that day — no base
+5. **Zero-sales guard**: If `day_sales <= 0`, guideline = 0 for that day — no base
    hours, no DOW adjustment, no AGM hours. This matters for partial opening weeks
    at new locations (e.g., Fayetteville's first week).
 
-4. **AGM hours added per operating day**: AGM daily hours from `LABOR_AGM_HOURS_TABLE`
-   are added ONLY to days with sales > 0. `DAILY_HOURS = WEEKLY_HOURS / 6` (Fuego
-   closed Mondays).
+6. **AGM hours added per operating day**: AGM daily hours from `LABOR_AGM_HOURS_TABLE`
+   are added ONLY to days with sales > 0 and lookup > 0. `DAILY_HOURS = WEEKLY_HOURS / 6`
+   (Fuego closed Mondays).
 
-**Validation reference points** (Feb 9, 2026 week):
+**Validation reference points** (Feb 9, 2026 week — full week):
 - Burleson: ~523 hrs (no AGM)
 - College Station: ~1,485 hrs (includes +50 AGM weekly)
 - Fayetteville: ~828 hrs (includes +200 AGM weekly)
 - San Antonio: ~714 hrs (no AGM)
 - San Marcos: ~702 hrs (includes -50 AGM weekly)
 - Waco: ~748 hrs (no AGM)
+
+**Validation reference points** (Jan 19, 2026 week — partial week, store closures):
+- Burleson: ~287 hrs (5 of 6 days operating, Sat=$18.75 → lookup=0 → 0 hrs)
+- Fayetteville: ~646 hrs (4 of 6 days operating + AGM)
+- Waco: ~475 hrs (full week — 7 days had sales ≥ days_open)
+- San Antonio: ~559 hrs (full week)
+- San Marcos: ~548 hrs (full week)
 
 ## Step 3: KPI Cards — Prior Year vs Trailing 4-Week Average
 
