@@ -222,10 +222,15 @@ ORDER BY 1
 
 ### Query 7 — Scheduled Hours (from 7shifts)
 
+**Important**: Include both `REGULAR_HOURS` and `OT_HOURS` (overtime). OT hours can
+be significant on weekends (e.g., Fayetteville Sun = 41.5 OT hrs). Omitting OT_HOURS
+will undercount scheduled hours by 3–5% at high-volume or new locations.
+
 ```sql
 WITH base AS (
-  SELECT d._file, d._modified, d.date, d.location, d.regular_hours, d.role,
-         m.RESTAURANT_NUMBER
+  SELECT d._file, d._modified, d.date, d.location,
+         d.regular_hours, COALESCE(d.ot_hours, 0) AS ot_hours,
+         d.role, m.RESTAURANT_NUMBER
   FROM SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES d
   JOIN RESTAURANT_MAPPING.RESTAURANT_MAPPING_TABLE m
     ON d.location = m.SEVEN_SHIFTS_LOCATION
@@ -239,7 +244,8 @@ latest_files AS (
   SELECT RESTAURANT_NUMBER, date, MAX_BY(_file, _modified) AS _file
   FROM base GROUP BY 1, 2
 )
-SELECT b.date AS report_date, SUM(b.regular_hours) AS scheduled_hours
+SELECT b.date AS report_date,
+  SUM(b.regular_hours) + SUM(b.ot_hours) AS scheduled_hours
 FROM base b
 INNER JOIN latest_files lf
   ON lf.RESTAURANT_NUMBER = b.RESTAURANT_NUMBER
