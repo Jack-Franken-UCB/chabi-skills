@@ -66,7 +66,8 @@ The date range spans from `ws-21d` through `ws+6d` (the Sunday ending the most r
 - The `'day'` period type can silently drop low-sales days (e.g., a $160 day absent
   from `'day'` but present in `'day_dow'`). This causes partial-week detection to fail
   and guideline hours to be severely miscalculated.
-- For `TIME_PERIOD_TYPE = 'week'`: use `TIME_PERIOD_TO_DATE = false` (unchanged).
+- For `TIME_PERIOD_TYPE = 'week'`: do NOT filter on `TIME_PERIOD_TO_DATE`. The weekly
+  total is split across `true` and `false` rows — both must be summed.
 
 **Critical note about VOIDED orders**:
 - ALL queries against ORDER_METRICS must include `AND VOIDED = false`
@@ -75,8 +76,10 @@ The date range spans from `ws-21d` through `ws+6d` (the Sunday ending the most r
 
 ### Query 1 — Weekly Sales (4 weeks + PY)
 
-**Important**: Use `TIME_PERIOD_TYPE = 'week'` with `TIME_PERIOD_TO_DATE = false`.
-In ORDER_METRICS, weekly aggregates live in the `week` period type with `to_date = false`.
+**Important**: Use `TIME_PERIOD_TYPE = 'week'` and do NOT filter on `TIME_PERIOD_TO_DATE`.
+The weekly aggregate is split across two rows: `TIME_PERIOD_TO_DATE = false` (most of the
+week) and `TIME_PERIOD_TO_DATE = true` (the partial/MTD portion). Both must be summed to
+get the correct weekly total. Filtering to only `false` will undercount sales significantly.
 (For daily granularity, always use `TIME_PERIOD_TYPE = 'day_dow'` — see general note above.)
 
 ```sql
@@ -93,7 +96,6 @@ WHERE RESTAURANT_LOCATION = '{location}'
   AND BRAND = 'fuego-tortilla-grill'
   AND TIME_PERIOD_TYPE = 'week'
   AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
-  AND TIME_PERIOD_TO_DATE = false
   AND VOIDED = false
 GROUP BY 1
 ORDER BY 1 DESC
