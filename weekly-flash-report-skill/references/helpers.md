@@ -59,9 +59,9 @@ def pill_labor_pct(v):
     return f'<span class="pill {cls}">{v:.1f}%</span>'
 
 def pill_rating(v):
-    """Review rating pill — green >=4, yellow 3-4, red <3."""
+    """Review rating pill — green >=4.6, yellow 4.0-4.6, red <4.0."""
     if v is None: return '<span class="pill pill-neutral">—</span>'
-    cls = "pill-green" if v >= 4 else ("pill-yellow" if v >= 3 else "pill-red")
+    cls = "pill-green" if v >= 4.6 else ("pill-yellow" if v >= 4.0 else "pill-red")
     return f'<span class="pill {cls}">{v:.1f}</span>'
 
 def kpi_badge(v, suffix="vs PY"):
