@@ -206,6 +206,11 @@ tbody tr.total-row td { border-top: 2px solid var(--border); }
 The HTML must include a `@page` directive inside the `<style>` block to control
 page size and margins. Use double braces `{{` / `}}` if inside an f-string.
 
+**Critical CSS ordering**: The `{CSS}` block starts with `@import url(...)` for Google
+Fonts. CSS requires `@import` to be the very first rule in a stylesheet — placing
+`@page` before it will silently invalidate the `@import`, causing font fallback
+and subtle rendering differences. Always place `{CSS}` first, then `@page`.
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -214,11 +219,11 @@ page size and margins. Use double braces `{{` / `}}` if inside an f-string.
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weekly Flash Report – {location}</title>
 <style>
+{CSS}
 @page {{
   size: A4 portrait;
   margin: 0.2in 0.2in;
 }}
-{CSS}
 </style>
 </head>
 <body>
