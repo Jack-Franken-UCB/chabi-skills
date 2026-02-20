@@ -6,8 +6,9 @@ description: >
   from Snowflake via Chabi Analytics, computes labor guidelines, generates an AI-written
   GM message, and produces a polished single-page portrait PDF report with the S3
   "Teal Thread" design. The report is generated as HTML first (to leverage full CSS
-  styling), then converted to a pixel-perfect PDF using headless Chrome with CSS
-  @page directives controlling orientation and margins.
+  styling), then converted to a pixel-perfect PDF using Playwright with headless
+  Chromium (preferred) or headless Chrome CLI (fallback), with CSS @page directives
+  controlling orientation and margins.
   Use this skill whenever the user asks for a weekly flash, weekly report, flash report,
   weekly summary, store performance report, location weekly update, or GM report for
   any Fuego location. Also trigger when a user says something casual like "how did
@@ -24,7 +25,8 @@ catering, ratings/reviews, daily labor, and labor trends — all benchmarked aga
 prior year and internal labor guidelines. A short AI-written "Message to General
 Manager" provides narrative context at the top. The report is built as HTML first
 (to leverage the full S3 "Teal Thread" CSS design), then converted to a pixel-perfect
-PDF using headless Chrome with CSS @page directives.
+PDF using Playwright with headless Chromium (preferred) or headless Chrome CLI
+(fallback), with CSS @page directives.
 
 ## Parameters
 
@@ -44,14 +46,14 @@ Write a Python script that:
 2. Processes results into Python data structures
 3. Computes labor guidelines, KPIs, and pill formatting
 4. Generates the complete HTML string
-5. Converts the HTML to PDF using headless Chrome
+5. Converts the HTML to PDF using Playwright with headless Chromium
 6. Saves the PDF to the outputs directory
 
-This approach (Python → HTML → PDF via headless Chrome) is the most reliable way to
-produce a pixel-perfect PDF because Chrome renders the full CSS exactly as a browser
+This approach (Python → HTML → PDF via Playwright/Chromium) is the most reliable way to
+produce a pixel-perfect PDF because Chromium renders the full CSS exactly as a browser
 would, preserving grid layouts, background colors, pills, fonts, and all visual styling.
 The CSS @page directive controls page size, orientation, and margins directly in the
-stylesheet rather than via Playwright API options.
+stylesheet. **Do NOT use wkhtmltopdf** — it breaks CSS Grid, variables, and modern layout.
 
 ## Step 1: Pull Data from Snowflake
 
@@ -564,7 +566,7 @@ handles all spacing.
 ## Step 7: Output as PDF
 
 The report is generated as HTML first (to leverage the full CSS design), then converted
-to a pixel-perfect PDF using headless Chrome.
+to a pixel-perfect PDF using Playwright with headless Chromium.
 
 ### 7a. Save the intermediate HTML
 
@@ -576,12 +578,37 @@ with open(html_path, "w") as f:
 ```
 where `location_slug` = location name lowercased, spaces replaced by underscores.
 
-### 7b. Convert HTML to PDF with headless Chrome
+### 7b. Convert HTML to PDF with Playwright (Chromium)
 
-Use headless Chrome directly (not Playwright) to print the HTML to PDF. The CSS @page
-directive handles page size, orientation, and margins, so no API-level options are
-needed for those. This approach is more reliable than Playwright for `file://` URLs.
+Use Playwright's Chromium to render the HTML to PDF. This is more portable than
+the `google-chrome` CLI (which may not be installed in all environments) and
+produces identical Chromium-rendered output. The CSS `@page` directive handles
+page size, orientation, and margins — use `prefer_css_page_size=True` to honor it.
 
+First, ensure Playwright is installed:
+```bash
+pip install playwright --break-system-packages -q
+python3 -m playwright install chromium
+```
+
+Then convert:
+```python
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(args=['--no-sandbox'])
+    page = browser.new_page()
+    page.goto(f"file://{html_path}", wait_until="networkidle")
+    page.pdf(
+        path=pdf_path,
+        print_background=True,
+        prefer_css_page_size=True,
+    )
+    page.close()
+    browser.close()
+```
+
+**Fallback — headless Chrome CLI** (if Playwright is unavailable):
 ```bash
 google-chrome --headless --no-sandbox --disable-gpu \
   --print-to-pdf=/path/to/output.pdf \
@@ -599,12 +626,14 @@ The CSS @page directive in the HTML controls the layout:
 ```
 
 **Key settings:**
-- `--print-to-pdf-no-header` and `--no-pdf-header-footer` — removes Chrome's default
-  header/footer (page numbers, URL, date)
-- `print-color-adjust: exact` in the CSS `@media print` block preserves all background
-  colors, pills, header gradients, and teal accents
+- `print_background=True` (Playwright) or `print-color-adjust: exact` in the CSS
+  `@media print` block — preserves all background colors, pills, header gradients,
+  and teal accents
 - The CSS `@page { size: A4 portrait; margin: 0.2in; }` controls page size and margins
   directly — tight margins maximize space for the data-dense tables
+- **Do NOT use wkhtmltopdf** — it uses an outdated WebKit engine that does not support
+  CSS Grid, CSS custom properties (variables), or modern flexbox, resulting in broken
+  layouts, missing background colors, and collapsed pill styling
 
 ### 7c. Deliver the PDF
 
