@@ -516,27 +516,31 @@ Write a concise, **insight-driven** paragraph (4–6 sentences) for the General 
 The GM can already see all the numbers in the report — the message should provide
 **analysis, context, and actionable recommendations** they can't get from the tables alone.
 
-**Do NOT** simply restate figures already visible in the report (e.g., "Sales were $X,
-orders were Y, labor was Z%"). Instead, focus on:
+### Tone & Voice
+- Write like a supportive but direct area manager — not a corporate memo, not a cheerleader
+- Use "you" and "your team" to make it personal and actionable
+- Avoid filler phrases like "great job", "keep it up", "as you can see"
+- Never start with a sales figure — lead with insight or trend
 
-1. **Sales trend & momentum** — Analyze the 4-week trajectory, not just the current week.
-   Count consecutive weeks of growth/decline. Highlight WoW inflections ("nice rebound
-   after a softer week" or "second straight week of decline — investigate"). Only mention
-   vs PY/T4W if there's a notable story.
-2. **Labor coaching callout** — Focus on actionable specifics: which days were most
-   over/under guideline, whether to tighten scheduling on specific days, and if
-   understaffing risks guest experience. Frame as a concrete action ("review cuts on
-   Friday" not "labor was +15 hrs over guideline").
-3. **Revenue per labor hour direction** — Compare WoW to flag efficiency changes. Only
-   mention if the change is meaningful (>2% WoW).
-4. **Review flags** — Only call out reviews if there's something **actionable**: a source
-   below 4.0 that needs attention, or sustained excellence worth reinforcing. Don't
-   just list scores already in the reviews table.
-5. **Forward-looking priority** — Close with a specific focus area for the coming week
-   based on what the data reveals, not a generic "keep it up."
+### What to Always Include
+1. **Sales momentum** — count consecutive weeks of growth or decline explicitly
+   ("3rd straight week of growth" or "2nd consecutive decline")
+2. **Labor coaching** — one specific action tied to a specific day
+   ("Wednesday ran +77 hrs over guideline — review shift overlap for that day")
+3. **Forward-looking priority** — one specific focus area for the coming week
+   based on what the data reveals, not a generic suggestion
+4. **Revenue per labor hour** — only mention if WoW change is meaningful (>2%)
 
-Tone: direct, coaching-oriented, concise. The GM should finish reading and know exactly
-what to prioritize this week.
+### What to Never Include
+- Numbers already visible in the report tables
+- Generic advice not tied to the data ("focus on guest experience")
+- More than one review callout unless there's a serious flag (below 3.5)
+- Speculation about causes without data support
+- Proposals to cut shifts or send employees home early
+
+### Length
+- 4–6 sentences maximum
+- Every sentence must contain a specific data point or actionable recommendation
 
 ## Step 5: Format & Pill Helpers
 
