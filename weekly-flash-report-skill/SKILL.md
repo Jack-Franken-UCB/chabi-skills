@@ -512,35 +512,8 @@ else:
 
 ## Step 4: Generate the GM Message
 
-Write a concise, **insight-driven** paragraph (4–6 sentences) for the General Manager.
-The GM can already see all the numbers in the report — the message should provide
-**analysis, context, and actionable recommendations** they can't get from the tables alone.
-
-### Tone & Voice
-- Write like a supportive but direct area manager — not a corporate memo, not a cheerleader
-- Use "you" and "your team" to make it personal and actionable
-- Avoid filler phrases like "great job", "keep it up", "as you can see"
-- Never start with a sales figure — lead with insight or trend
-
-### What to Always Include
-1. **Sales momentum** — count consecutive weeks of growth or decline explicitly
-   ("3rd straight week of growth" or "2nd consecutive decline")
-2. **Labor coaching** — one specific action tied to a specific day
-   ("Wednesday ran +77 hrs over guideline — review shift overlap for that day")
-3. **Forward-looking priority** — one specific focus area for the coming week
-   based on what the data reveals, not a generic suggestion
-4. **Revenue per labor hour** — only mention if WoW change is meaningful (>2%)
-
-### What to Never Include
-- Numbers already visible in the report tables
-- Generic advice not tied to the data ("focus on guest experience")
-- More than one review callout unless there's a serious flag (below 3.5)
-- Speculation about causes without data support
-- Proposals to cut shifts or send employees home early
-
-### Length
-- 4–6 sentences maximum
-- Every sentence must contain a specific data point or actionable recommendation
+Read `references/gm_message_guide.md` for the complete GM message writing framework,
+including the Headline → Story → Ask structure, catering callouts, and scenario examples.
 
 ## Step 5: Format & Pill Helpers
 
