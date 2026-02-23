@@ -158,17 +158,31 @@ ORDER BY 1, 2
 
 ### Query 8 — AGM Hours
 
+**IMPORTANT:** This table is NOT in CHABI_DBT. It lives in its own schema, uses display-name
+brands (not slugs), text-format dates (M/D/YYYY), and `STORE_LISTING` as the location column.
+
 ```sql
-SELECT * FROM CHABI_DBT.LABOR_AGM_HOURS_TABLE
-WHERE BRAND = 'fuego-tortilla-grill'
-ORDER BY RESTAURANT_LOCATION, START_DATE
+SELECT STORE_LISTING AS RESTAURANT_LOCATION,
+       START_DATE, END_DATE, DAILY_HOURS, WEEKLY_HOURS
+FROM LABOR_AGM_HOURS.LABOR_AGM_HOURS_TABLE
+WHERE BRAND = 'Fuego Tortilla Grill'
+ORDER BY STORE_LISTING, START_DATE
 ```
+
+**Date parsing note:** START_DATE and END_DATE are TEXT columns in `M/D/YYYY` format.
+Parse them to proper dates before using in guideline computation. Each row defines a
+date range and the AGM weekly hours applicable during that range. Always query the live
+table — do NOT hardcode AGM values, as they change week-to-week during new-store ramp-downs.
 
 ### Query 9 — Labor Guidelines
 
+**IMPORTANT:** This table is NOT in CHABI_DBT. It lives in its own schema and uses
+display-name brands (not slugs).
+
 ```sql
-SELECT * FROM CHABI_DBT.LABOR_GUIDELINES_TABLE
-WHERE BRAND = 'fuego-tortilla-grill'
+SELECT WEEKLY_NET_SALES_THRESHOLD, WEEKLY_TOTAL_HOURS
+FROM LABOR_GUIDELINES.LABOR_GUIDELINES_TABLE
+WHERE BRAND = 'Fuego Tortilla Grill'
 ORDER BY WEEKLY_NET_SALES_THRESHOLD
 ```
 
