@@ -146,15 +146,15 @@ body {
 }
 
 /* ── TABLES ── */
-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
 thead th {
-  padding: 4px 5px; text-align: right; font-weight: 600; font-size: 8px;
+  padding: 3px 4px; text-align: right; font-weight: 600; font-size: 7.5px;
   text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-secondary);
   border-bottom: 2px solid var(--border); white-space: nowrap;
 }
 thead th:first-child { text-align: left; }
 tbody td {
-  padding: 4px 5px; text-align: right;
+  padding: 3px 4px; text-align: right;
   border-bottom: 1px solid #ede7e0; white-space: nowrap;
 }
 tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-primary); }
@@ -284,7 +284,7 @@ and subtle rendering differences. Always place `{CSS}` first, then `@page`.
     <table>
       <thead><tr>
         <th>Week</th><th>Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th>
-        <th>Avg Ticket</th><th>Tkt vs PY</th><th>Cat #</th><th>Cat $</th><th>Cat $ PY</th>
+        <th>Avg Tkt</th><th>Tkt vs PY</th><th>Disc #</th><th>Disc %</th><th>Cat #</th><th>Cat $</th><th>Cat $ PY</th>
       </tr></thead>
       <tbody>{sales_rows}</tbody>
     </table>

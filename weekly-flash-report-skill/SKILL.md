@@ -313,6 +313,26 @@ GUIDELINES_TABLE = {
 }
 ```
 
+### Query 10 — Discounts (4 weeks)
+
+```sql
+SELECT
+  DATE_TRUNC('week', TIME_PERIOD_VALUE) AS week_start,
+  SUM(ORDER_COUNT) AS discount_count,
+  SUM(DISCOUNT_AMOUNT) AS discount_amount
+FROM CHABI_DBT.DISCOUNT_METRICS
+WHERE RESTAURANT_LOCATION = '{location}'
+  AND BRAND = 'fuego-tortilla-grill'
+  AND TIME_PERIOD_TYPE = 'day_dow'
+  AND TIME_PERIOD_VALUE BETWEEN '{ws_minus_21}' AND '{ws_plus_6}'
+GROUP BY 1
+ORDER BY 1 DESC
+```
+
+This returns the number of discounted orders and total discount dollar amount per week.
+Display as **Disc #** (count) and **Disc %** (discount_amount / weekly_sales × 100) in the
+Sales Performance table.
+
 ## Step 2: Compute Labor Guidelines
 
 ### Guideline Lookup (interpolation)
