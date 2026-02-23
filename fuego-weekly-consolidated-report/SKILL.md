@@ -409,23 +409,34 @@ f"San Antonio's food add-on rate is 23.9%"
 
 ### Callout Content Guidelines
 
-**CRITICAL PRINCIPLE: Insights must add value beyond the tables.** Do NOT restate numbers
-that are already visible in the rack-and-stack tables (e.g., "X led with $Y in sales" or
-"X ran at Z% of guide"). Instead, analyze 4-week TRENDS, identify momentum shifts, connect
-metrics across sections, and surface actionable patterns the reader wouldn't see by scanning
-the tables alone.
+**CRITICAL PRINCIPLE: The tables show WHAT happened. The insights explain WHY it matters
+and WHAT TO DO about it.** Every sentence in an AI insight must pass this test: "Could the
+reader learn this just by looking at the tables?" If yes, DELETE it. Insights must come from
+cross-metric analysis, multi-week trend interpretation, data NOT shown in any table
+(upselling rates, PY trajectory, scheduling gaps), or actionable recommendations.
+
+**HARD RULES:**
+1. NEVER state a number that appears in any table (sales $, SSS%, guide hrs, labor %, SPLH, etc.)
+2. NEVER restate rankings ("X led the system" or "Y came in last")
+3. NEVER list each location's metric for the current week
+4. ALWAYS connect 2+ data points to surface a pattern the tables can't show
+5. ALWAYS end with an actionable recommendation (what should the GM/operator DO?)
 
 **Anti-patterns to AVOID:**
 - ❌ "College Station led with $145K" (reader can see the table)
 - ❌ "San Marcos ran tightest to guide at 95.2%" (already in the Labor R&S)
+- ❌ "Fayetteville ran 119.5% of guide with 944 hours vs 790" (all in the table)
 - ❌ Listing each location's current-week number
 - ❌ Restating the rank order shown in the table
+- ❌ "System sales were $385K this week" (in the KPI cards AND trends table)
 
 **Patterns to USE:**
-- ✅ "Burleson has tightened labor 3 weeks running (31% → 25% → 20%), showing scheduling discipline as volume grows"
-- ✅ "San Antonio snapped back after a soft stretch — watch if this holds or was event-driven"
-- ✅ "Ovation scores at X signal in-store execution issues that Google reviews often miss"
-- ✅ "System catering pulled back — San Marcos has zero this week, an untapped growth lever"
+- ✅ Ticket vs. transaction divergence: "SSS is negative but avg ticket is rising — this is a traffic problem, not a pricing problem. Focus marketing on guest count."
+- ✅ Cross-store upselling gaps: "Queso attachment ranges from 11% to 30% — closing that gap lifts avg ticket $1-2 at trailing stores"
+- ✅ Scheduling efficiency: "Over-scheduled vs. guideline but actual came in under schedule — the schedule itself needs tightening at the planning stage"
+- ✅ 4-week PY trajectory: "Trailing 4-week catering is +34% vs. same window last year — sustained pipeline growth"
+- ✅ Platform divergence: "Strong Google but weak Ovation = takeout is fine, dine-in is slipping"
+- ✅ Multi-week trend direction: "Has tightened vs. guideline 3 straight weeks — share this as a best practice"
 
 **Sales Callout** should cover:
 - 4-week sales MOMENTUM: who is accelerating vs. decelerating?
@@ -611,7 +622,7 @@ The report has these sections in order:
 1. **Header** — "System Weekly Flash Report", "Fuego Tortilla Grill", "All 6 Locations", date range
 2. **KPI Cards** (5) — System Sales, System Orders, Avg Ticket, System Labor %, Catering
 3. **System Summary** — GM-style narrative paragraph
-4. **System Performance Trends** — 4-week table with:
+4. **System Performance Trends** — 4-week table, **newest week first**, with:
    Week, Sales, SSS%, Orders, SST%, Avg Tkt, Guide Hrs (whole), Hours (whole),
    vs Guide #, vs Guide %, Labor %, Catering
 5. **Sales Rack & Stack** — table + AI Insight callout below
