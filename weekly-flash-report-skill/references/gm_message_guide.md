@@ -179,3 +179,17 @@ Think of the voice as a **sharp, supportive district manager** who just looked a
 
 ### Catering Masking Dine-In
 > "Solid week at $145K with comps at +4.3% — execution was clean across the board. Catering accounted for the bulk of your YoY sales gain — strip it out and dine-in growth looks much thinner. Keep this momentum going — protect your peak-day staffing levels and keep scheduling tight to guideline."
+
+---
+
+## Broad vs Single-Day Labor Overage
+
+When multiple days run over guideline, don't just name the worst day — call out the pattern.
+
+| Trigger | What to say |
+|---|---|
+| **3+ of 6 operating days ran 8+ hrs over guideline (moderate, 100–105%)** | "Labor ran over guideline on X of 6 operating days — worth reviewing the full week's scheduling template rather than just one day." |
+| **3+ of 6 operating days ran 8+ hrs over guideline (significant, >105%)** | "Labor ran over guideline on X of 6 operating days — this isn't a single-day scheduling miss, it's a broader staffing pattern that needs a full-week review." |
+| **Only 1–2 days over** | Name the specific day(s) as before. |
+
+**Key principle**: When the overage is spread across most of the week, the Ask should point to a full scheduling template review, not a single day.
