@@ -340,21 +340,23 @@ Structure as `loc_weekly[location][week_index]` with all KPIs.
 
 Columns: Rank, Location, Sales, SSS %, Orders, SST %, Avg Ticket, Tkt Chg, Catering, Basis
 - Non-comp stores show N/A pills for SSS/SST/Tkt Chg with "Non-Comp" basis
-- System total row at bottom
+- **Company Average row** at bottom: Rank shows "Avg" in a dark charcoal pill, Location = "Company Average", metrics = system totals / number of locations. Use a distinct tan background (`var(--fuego-tan)`) with bold text and a top border to visually separate from location rows.
 
 ### Labor R&S — Ranked by vs Guide % (lowest = #1)
 
 Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor %, SPLH
 - Guide/Sch/Actual hrs rounded to whole numbers
-- System total row at bottom
+- **Company Average row** at bottom (same styling as Sales)
 
 ### Reviews R&S — Ranked by Weighted Avg Rating (highest = #1)
 
 Columns: Rank, Location, Google, #, Ovation, #, Yelp, #, Wtd Avg, Total #
+- **Company Average row** at bottom: ratings = average of locations with data, counts = system total
 
 ### Catering R&S — Ranked by Catering $ (highest = #1)
 
 Columns: Rank, Location, Orders, Cat $, Cat $ PY, vs PY
+- **Company Average row** at bottom (same styling)
 
 ## Step 5: Generate AI Insights (with Verification Loop)
 
