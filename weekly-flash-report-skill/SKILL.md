@@ -495,7 +495,7 @@ as normal (badge text: "vs PY").
 
 For locations **without prior year data** (new stores where `amount_py == 0`), compare
 the current week against the **trailing 4-week average** of the prior 3 weeks in the
-data range. Badge text: "vs T4W Avg".
+data range. Badge text: "vs T4W Avg". **This applies to the KPI cards only.**
 
 ```python
 if has_py:
@@ -510,6 +510,11 @@ else:
     sst = pct_chg(cw_orders, trail_orders)
     kpi_suffix = "vs T4W Avg"
 ```
+
+**Sales Performance table**: For non-comp stores, SSS%, SST%, and Tkt vs PY columns
+must show `N/A` (neutral pill) for every row — do NOT use the T4W Avg calculation in
+the table. Only stores with actual prior year data (`amount_py > 0`) should display
+comp percentages in the Sales Performance rows.
 
 ### Labor KPI Card Badge — vs Guide %
 
