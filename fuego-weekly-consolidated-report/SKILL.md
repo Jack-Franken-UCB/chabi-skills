@@ -145,15 +145,25 @@ GROUP BY 1, 2
 ORDER BY 1, 2
 ```
 
-### Query 7 — Scheduled Hours (SEVEN_SHIFTS_DATA)
+### Query 7 — Scheduled Hours (Seven Shifts)
+
+**IMPORTANT:** This table is NOT in CHABI_DBT. It lives in its own brand-specific schema.
+The raw data has heavy duplication — always DISTINCT on employee+shift identifiers before aggregating.
+The LOCATION column format is `'Fuego Tortilla Grill - {City}'`, so strip the prefix to match
+other tables' RESTAURANT_LOCATION values.
 
 ```sql
-SELECT
-  RESTAURANT_LOCATION, SHIFT_DATE,
-  SUM(REGULAR_HOURS) + SUM(COALESCE(OT_HOURS, 0)) AS scheduled_hours
-FROM CHABI_DBT.SEVEN_SHIFTS_DATA
-WHERE BRAND = 'fuego-tortilla-grill'
-  AND SHIFT_DATE BETWEEN '{earliest_monday}' AND '{latest_sunday}'
+WITH deduped AS (
+  SELECT DISTINCT
+    REPLACE(LOCATION, 'Fuego Tortilla Grill - ', '') AS RESTAURANT_LOCATION,
+    DATE AS SHIFT_DATE,
+    FIRST, LAST, IN_TIME, OUT_TIME, ROLE,
+    REGULAR_HOURS + COALESCE(OT_HOURS, 0) AS hrs
+  FROM SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES
+  WHERE DATE BETWEEN '{earliest_monday}' AND '{latest_sunday}'
+)
+SELECT RESTAURANT_LOCATION, SHIFT_DATE, SUM(hrs) AS scheduled_hours
+FROM deduped
 GROUP BY 1, 2
 ORDER BY 1, 2
 ```
@@ -250,7 +260,7 @@ For each location, from the current week's data:
 | vs Guide # | Actual Hours - Guideline Hours | |
 | vs Guide % | Actual Hours / Guideline Hours × 100 | |
 | Scheduled Hours | Sum of daily scheduled from 7Shifts | |
-| SPLH | Sales / Labor Hours | Sales Per Labor Hour |
+| SPLH | Sales / Labor Hours | Computed for AI insights only; not displayed in tables |
 | Catering $ | From catering query | |
 | Reviews | Weighted avg across Google/Ovation/Yelp | Weight by count |
 
@@ -282,7 +292,7 @@ Columns: Rank, Location, Sales, SSS %, Orders, SST %, Avg Ticket, Tkt Chg, Cater
 
 ### Labor R&S — Ranked by vs Guide % (lowest = #1)
 
-Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor %, SPLH
+Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor %
 - Guide/Sch/Actual hrs rounded to whole numbers
 - System total row at bottom
 
@@ -292,7 +302,7 @@ Columns: Rank, Location, Google, #, Ovation, #, Yelp, #, Wtd Avg, Total #
 
 ### Catering R&S — Ranked by Catering $ (highest = #1)
 
-Columns: Rank, Location, Orders, Cat $, Cat $ PY, vs PY
+Columns: Rank, Location, Orders, Cat $
 
 ## Step 5: Generate AI Insights (with Verification Loop)
 
@@ -368,26 +378,28 @@ the tables alone.
 **Sales Callout** should cover:
 - 4-week sales MOMENTUM: who is accelerating vs. decelerating?
 - SSS trend direction over the window (improving/worsening), not just this week's number
+- Ticket vs. transaction divergence: if SSS is negative but avg ticket is rising, the comp gap is a traffic problem, not a check-size problem — call this out explicitly
+- Upselling gaps: compare attachment rates (queso, drinks, desserts) across stores — the gap between best and worst indicates coaching opportunity and potential ticket lift
 - New store ramp trajectory — are they on a healthy growth curve?
-- Connect to potential drivers (events, weather, operational changes)
 
 **Labor Callout** should cover:
+- Scheduling efficiency: compare SCHEDULED hours vs GUIDELINE hours vs ACTUAL hours — overscheduling is a planning problem (GM), not a shift management problem
 - Multi-week labor % TRAJECTORY for notable stores (improving or creeping?)
 - System-level guideline adherence direction (tightening or loosening?)
-- Call out stores where labor trend conflicts with sales trend (e.g., labor rising while sales flat)
-- AGM context for new stores — are training hours winding down on schedule?
+- AGM context for new stores — what share of the guideline is AGM training hours? As AGM ramps down, vs-guide gap will tighten naturally
+- SPLH spread across stores — if it varies widely, it signals different staffing models
 
 **Reviews Callout** should cover:
-- Platform divergence (Google vs Ovation) and what it signals operationally
-- Ovation as a leading indicator of in-store issues (it captures real-time dine-in feedback)
+- Review VOLUME trends — if volume drops week-over-week, check Ovation survey prompt consistency
+- Ovation as a leading indicator of in-store issues (real-time dine-in feedback)
+- Beverage attachment rates as a proxy for service engagement — higher drink attachment often correlates with better review scores
 - Trend direction over the window, not just current-week ranking
-- Survey volume context for data reliability
 
 **Catering Callout** should cover:
-- System-level catering direction over the 4-week window
-- Which stores are building a real pipeline (consecutive growth) vs. one-off orders
+- PY catering comparisons for comp stores: which stores are beating/trailing last year and by how much? Use PY data to flag pipeline growth or account churn
+- Average catering ticket (Cat $ / Orders) — high avg ticket signals corporate/event business worth protecting
+- System-level 4-week trajectory: is catering building or fading?
 - Identify stores with minimal/zero catering as untapped growth levers
-- Connect to PY comparisons only when the delta is meaningful
 
 ### 5c. Verification Loop
 
