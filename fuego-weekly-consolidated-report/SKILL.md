@@ -147,23 +147,75 @@ ORDER BY 1, 2
 
 ### Query 7 — Scheduled Hours (Seven Shifts)
 
-**IMPORTANT:** This table is NOT in CHABI_DBT. It lives in its own brand-specific schema.
-The raw data has heavy duplication — always DISTINCT on employee+shift identifiers before aggregating.
-The LOCATION column format is `'Fuego Tortilla Grill - {City}'`, so strip the prefix to match
-other tables' RESTAURANT_LOCATION values.
+**IMPORTANT:** This table is NOT in CHABI_DBT. It lives in brand-specific schemas.
+The raw data contains multiple file exports — use `MAX_BY(_file, _modified)` to pick the
+**latest file per (location, date)** rather than DISTINCT on shift fields. Using DISTINCT
+keeps stale shifts from older exports and inflates hours ~20–40%.
+
+Also: exclude management roles (`General Manager`, `Assistant Manager`, `Kitchen Manager`),
+use `RESTAURANT_MAPPING.RESTAURANT_MAPPING_TABLE` to map Seven Shifts location names to
+restaurant numbers/locations, and apply a 6AM business-day boundary for cross-midnight shifts.
+
+Reference implementation: **Metabase Card #769** (section 5: `scheduled_hours_view`).
 
 ```sql
-WITH deduped AS (
-  SELECT DISTINCT
-    REPLACE(LOCATION, 'Fuego Tortilla Grill - ', '') AS RESTAURANT_LOCATION,
-    DATE AS SHIFT_DATE,
-    FIRST, LAST, IN_TIME, OUT_TIME, ROLE,
-    REGULAR_HOURS + COALESCE(OT_HOURS, 0) AS hrs
-  FROM SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES
-  WHERE DATE BETWEEN '{earliest_monday}' AND '{latest_sunday}'
+WITH locations AS (
+  SELECT SEVEN_SHIFTS_LOCATION, RESTAURANT_NUMBER, LOCATION AS restaurant_location
+  FROM RESTAURANT_MAPPING.RESTAURANT_MAPPING_TABLE
+),
+joined AS (
+  SELECT loc.RESTAURANT_NUMBER AS restaurant_number, loc.restaurant_location,
+    d.date AS shift_date, d.in_time, d.out_time, d.role, d._modified, d._file
+  FROM SEVEN_SHIFTS_DATA_FUEGO_TORTILLA_GRILL.SCHEDULED_HOURS_WAGES d
+  LEFT JOIN locations loc ON d.location = loc.SEVEN_SHIFTS_LOCATION
+  WHERE d.date BETWEEN '{earliest_monday}' AND '{latest_sunday}'
+),
+latest_files AS (
+  SELECT restaurant_number, shift_date, MAX_BY(_file, _modified) AS _file
+  FROM joined GROUP BY 1, 2
+),
+scheduled_labor_table AS (
+  SELECT j.restaurant_number, j.restaurant_location, j.shift_date,
+    TIMESTAMP_NTZ_FROM_PARTS(j.shift_date, TO_TIME(j.in_time, 'HH12:MI AM')) AS in_date,
+    CASE
+      WHEN TIMESTAMP_NTZ_FROM_PARTS(j.shift_date, TO_TIME(j.out_time, 'HH12:MI AM'))
+           >= TIMESTAMP_NTZ_FROM_PARTS(j.shift_date, TO_TIME(j.in_time, 'HH12:MI AM'))
+      THEN TIMESTAMP_NTZ_FROM_PARTS(j.shift_date, TO_TIME(j.out_time, 'HH12:MI AM'))
+      ELSE DATEADD('day', 1, TIMESTAMP_NTZ_FROM_PARTS(j.shift_date, TO_TIME(j.out_time, 'HH12:MI AM')))
+    END AS out_date
+  FROM joined j
+  INNER JOIN latest_files lf
+    ON j.restaurant_number = lf.restaurant_number
+   AND j.shift_date = lf.shift_date AND j._file = lf._file
+  WHERE j.role NOT IN ('General Manager','Assistant Manager','Kitchen Manager')
+),
+shifts AS (
+  SELECT *, TO_DATE(DATEADD('hour',-6,in_date)) AS report_date_1,
+            TO_DATE(DATEADD('hour',-6,out_date)) AS report_date_2
+  FROM scheduled_labor_table
+),
+day1 AS (
+  SELECT report_date_1 AS report_date, restaurant_number, restaurant_location,
+    SUM(GREATEST(DATEDIFF('second',
+      GREATEST(in_date, TIMESTAMP_NTZ_FROM_PARTS(report_date_1, TO_TIME('06:00:00'))),
+      LEAST(out_date, DATEADD('day',1,TIMESTAMP_NTZ_FROM_PARTS(report_date_1, TO_TIME('06:00:00'))))
+    ),0)/3600.0) AS scheduled_hours
+  FROM shifts GROUP BY 1,2,3
+),
+day2 AS (
+  SELECT report_date_2 AS report_date, restaurant_number, restaurant_location,
+    SUM(GREATEST(DATEDIFF('second',
+      GREATEST(in_date, TIMESTAMP_NTZ_FROM_PARTS(report_date_2, TO_TIME('06:00:00'))),
+      LEAST(out_date, DATEADD('day',1,TIMESTAMP_NTZ_FROM_PARTS(report_date_2, TO_TIME('06:00:00'))))
+    ),0)/3600.0) AS scheduled_hours
+  FROM shifts WHERE report_date_2 <> report_date_1 GROUP BY 1,2,3
+),
+daily_scheduled AS (
+  SELECT * FROM day1 UNION ALL SELECT * FROM day2
 )
-SELECT RESTAURANT_LOCATION, SHIFT_DATE, SUM(hrs) AS scheduled_hours
-FROM deduped
+SELECT restaurant_location, report_date, SUM(scheduled_hours) AS scheduled_hours
+FROM daily_scheduled
+WHERE report_date BETWEEN '{earliest_monday}' AND '{latest_sunday}'
 GROUP BY 1, 2
 ORDER BY 1, 2
 ```
@@ -260,7 +312,7 @@ For each location, from the current week's data:
 | vs Guide # | Actual Hours - Guideline Hours | |
 | vs Guide % | Actual Hours / Guideline Hours × 100 | |
 | Scheduled Hours | Sum of daily scheduled from 7Shifts | |
-| SPLH | Sales / Labor Hours | Computed for AI insights only; not displayed in tables |
+| SPLH | Sales / Labor Hours | Sales Per Labor Hour |
 | Catering $ | From catering query | |
 | Reviews | Weighted avg across Google/Ovation/Yelp | Weight by count |
 
@@ -292,7 +344,7 @@ Columns: Rank, Location, Sales, SSS %, Orders, SST %, Avg Ticket, Tkt Chg, Cater
 
 ### Labor R&S — Ranked by vs Guide % (lowest = #1)
 
-Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor %
+Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor %, SPLH
 - Guide/Sch/Actual hrs rounded to whole numbers
 - System total row at bottom
 
@@ -302,7 +354,7 @@ Columns: Rank, Location, Google, #, Ovation, #, Yelp, #, Wtd Avg, Total #
 
 ### Catering R&S — Ranked by Catering $ (highest = #1)
 
-Columns: Rank, Location, Orders, Cat $
+Columns: Rank, Location, Orders, Cat $, Cat $ PY, vs PY
 
 ## Step 5: Generate AI Insights (with Verification Loop)
 
@@ -573,6 +625,7 @@ The report has these sections in order:
 - Page 1 should have comfortable spacing — larger KPI cards, generous GM message padding
 - Rank pills: 1st=solid green, 2nd=light green, 3rd=gold, last=red, middle=gray
 - Metric pills: green=good, red=bad, yellow=neutral (thresholds vary by metric)
+- **Rating pills specifically**: ≥4.5 = green, 4.0–4.4 = yellow, <4.0 = red
 - Guide/Sch/Actual hrs in both Trends and Labor R&S rounded to **whole numbers**
 - Report can span multiple pages — use CSS `break-inside: avoid` on sections
 
