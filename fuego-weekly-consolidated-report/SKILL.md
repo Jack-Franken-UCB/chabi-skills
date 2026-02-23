@@ -82,6 +82,8 @@ GROUP BY 1, 2
 ```
 
 Note: Aggregate catering by week after pulling (group by location + week_start).
+**Important**: Preserve both `amount` and `orders` through the weekly aggregation —
+the Catering Rack & Stack table displays the order count per location.
 
 ### Query 3 — Catering Prior Year
 
@@ -345,29 +347,47 @@ f"San Antonio's food add-on rate is 23.9%"
 
 ### Callout Content Guidelines
 
+**CRITICAL PRINCIPLE: Insights must add value beyond the tables.** Do NOT restate numbers
+that are already visible in the rack-and-stack tables (e.g., "X led with $Y in sales" or
+"X ran at Z% of guide"). Instead, analyze 4-week TRENDS, identify momentum shifts, connect
+metrics across sections, and surface actionable patterns the reader wouldn't see by scanning
+the tables alone.
+
+**Anti-patterns to AVOID:**
+- ❌ "College Station led with $145K" (reader can see the table)
+- ❌ "San Marcos ran tightest to guide at 95.2%" (already in the Labor R&S)
+- ❌ Listing each location's current-week number
+- ❌ Restating the rank order shown in the table
+
+**Patterns to USE:**
+- ✅ "Burleson has tightened labor 3 weeks running (31% → 25% → 20%), showing scheduling discipline as volume grows"
+- ✅ "San Antonio snapped back after a soft stretch — watch if this holds or was event-driven"
+- ✅ "Ovation scores at X signal in-store execution issues that Google reviews often miss"
+- ✅ "System catering pulled back — San Marcos has zero this week, an untapped growth lever"
+
 **Sales Callout** should cover:
-- Which comp store(s) have positive/negative SSS and their 4-week trajectory
-- Transaction trends (SST) — separate from ticket trends
-- Ticket gap analysis using REAL upselling data (queso attach, food addon rate, bev rate)
-- New store momentum with 4-week sales trajectory
-- Do NOT mention College Station's high revenue share (it's obvious)
+- 4-week sales MOMENTUM: who is accelerating vs. decelerating?
+- SSS trend direction over the window (improving/worsening), not just this week's number
+- New store ramp trajectory — are they on a healthy growth curve?
+- Connect to potential drivers (events, weather, operational changes)
 
 **Labor Callout** should cover:
-- Who ran tightest/loosest to guide and WHY (e.g., AGM allowances)
-- 4-week labor % trajectory for notable stores
-- Schedule-vs-actual gaps and what they might indicate
-- Whether running under guide might be hurting sales (connect to SSS/SST)
+- Multi-week labor % TRAJECTORY for notable stores (improving or creeping?)
+- System-level guideline adherence direction (tightening or loosening?)
+- Call out stores where labor trend conflicts with sales trend (e.g., labor rising while sales flat)
+- AGM context for new stores — are training hours winding down on schedule?
 
 **Reviews Callout** should cover:
-- 4-week trends (improving/declining), not just current week
-- Platform divergence (Google vs Ovation) and what it signals
-- Survey volume and its impact on data reliability
+- Platform divergence (Google vs Ovation) and what it signals operationally
+- Ovation as a leading indicator of in-store issues (it captures real-time dine-in feedback)
+- Trend direction over the window, not just current-week ranking
+- Survey volume context for data reliability
 
 **Catering Callout** should cover:
-- 4-week catering trajectories (show the progression)
-- Correct PY comparisons (verify direction: up or down!)
-- Penetration rate (catering as % of store sales)
-- New store catering development
+- System-level catering direction over the 4-week window
+- Which stores are building a real pipeline (consecutive growth) vs. one-off orders
+- Identify stores with minimal/zero catering as untapped growth levers
+- Connect to PY comparisons only when the delta is meaningful
 
 ### 5c. Verification Loop
 
@@ -528,8 +548,8 @@ The report has these sections in order:
 2. **KPI Cards** (5) — System Sales, System Orders, Avg Ticket, System Labor %, Catering
 3. **System Summary** — GM-style narrative paragraph
 4. **System Performance Trends** — 4-week table with:
-   Week, Sales, SSS%, Orders, SST%, Avg Tkt, Guide Hrs (whole), Actual Hrs (whole),
-   vs Guide #, vs Guide %, Labor %, SPLH, Catering, Cat PY
+   Week, Sales, SSS%, Orders, SST%, Avg Tkt, Guide Hrs (whole), Hours (whole),
+   vs Guide #, vs Guide %, Labor %, Catering
 5. **Sales Rack & Stack** — table + AI Insight callout below
 6. **Labor Rack & Stack** — table + AI Insight callout below
 7. **Reviews Rack & Stack** — table + AI Insight callout below

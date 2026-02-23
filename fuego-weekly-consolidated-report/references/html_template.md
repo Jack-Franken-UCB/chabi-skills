@@ -228,7 +228,7 @@ tbody tr.highlight { background: #f5efe9; }
       <thead><tr>
         <th>Week</th><th>Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th>
         <th>Avg Tkt</th><th>Guide Hrs</th><th>Actual Hrs</th><th>vs Guide #</th>
-        <th>vs Guide %</th><th>Labor %</th><th>SPLH</th><th>Catering</th><th>Cat PY</th>
+        <th>vs Guide %</th><th>Labor %</th><th>Catering</th>
       </tr></thead>
       <tbody>{trends_rows}</tbody>
     </table>

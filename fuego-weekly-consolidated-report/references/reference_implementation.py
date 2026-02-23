@@ -13,9 +13,9 @@ from collections import defaultdict
 # CONFIGURATION
 # ============================================================
 LOCATIONS = ["Burleson", "College Station", "Fayetteville", "San Antonio", "San Marcos", "Waco"]
-WEEK_START = date(2026, 2, 9)
-WEEK_END = date(2026, 2, 15)
-WEEK_STARTS = [date(2026, 2, 9), date(2026, 2, 2), date(2026, 1, 26), date(2026, 1, 19)]
+WEEK_START = date(2026, 2, 16)
+WEEK_END = date(2026, 2, 22)
+WEEK_STARTS = [date(2026, 2, 16), date(2026, 2, 9), date(2026, 2, 2), date(2026, 1, 26)]
 TODAY_STR = "February 17, 2026"
 
 # ============================================================
