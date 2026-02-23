@@ -333,6 +333,29 @@ This returns the number of discounted orders and total discount dollar amount pe
 Display as **Disc #** (count) and **Disc %** (discount_amount / weekly_sales × 100) in the
 Sales Performance table.
 
+### Query 11 — Historical Weekly Sales (~6 months, for GM Message)
+
+```sql
+SELECT
+  RESTAURANT_LOCATION AS location,
+  TIME_PERIOD_VALUE AS week_start,
+  SUM(AMOUNT) AS amount,
+  SUM(ORDER_COUNT) AS orders
+FROM CHABI_DBT.ORDER_METRICS
+WHERE RESTAURANT_LOCATION = '{location}'
+  AND BRAND = 'fuego-tortilla-grill'
+  AND TIME_PERIOD_TYPE = 'week'
+  AND TIME_PERIOD_VALUE BETWEEN DATEADD('week', -26, '{ws_minus_21}') AND '{ws_plus_6}'
+  AND VOIDED = false
+GROUP BY 1, 2
+ORDER BY 2
+```
+
+Used exclusively for GM Message generation:
+- **Streak calculation**: consecutive weeks of growth/decline
+- **Milestone grounding**: "Strongest week since {month}" by finding last week ≥ current sales
+- **Streak comparison**: "Longest positive run since {month}" by finding prior streaks of equal length
+
 ## Step 2: Compute Labor Guidelines
 
 ### Guideline Lookup (interpolation)
