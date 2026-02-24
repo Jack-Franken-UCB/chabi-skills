@@ -167,56 +167,67 @@ weekly_sales_raw = [
     ("Waco","2026-02-16",50726.49,49394.71,3162,3017,667.02),
 ]
 
-# Daily labor
+# Daily labor (day_dow — includes Monday boundary hours)
 daily_labor_raw = [
-    ("Burleson","2026-01-27",69.80,1047.91),("Burleson","2026-01-28",89.00,1247.71),("Burleson","2026-01-29",111.92,1588.98),
-    ("Burleson","2026-01-30",119.61,1682.76),("Burleson","2026-01-31",122.84,1811.64),("Burleson","2026-02-01",100.54,1610.96),
-    ("Burleson","2026-02-03",103.78,1434.99),("Burleson","2026-02-04",94.58,1313.09),("Burleson","2026-02-05",103.01,1500.76),
-    ("Burleson","2026-02-06",114.38,1711.50),("Burleson","2026-02-07",101.05,1417.62),("Burleson","2026-02-08",107.84,1514.87),
-    ("Burleson","2026-02-10",94.30,1382.78),("Burleson","2026-02-11",97.97,1459.10),("Burleson","2026-02-12",99.24,1455.65),
+    ("Burleson","2026-01-26",0.22,3.29),("Burleson","2026-01-27",69.8,1047.91),("Burleson","2026-01-28",89,1247.71),
+    ("Burleson","2026-01-29",110.24,1588.98),("Burleson","2026-01-30",119.61,1682.76),("Burleson","2026-01-31",122.84,1811.64),
+    ("Burleson","2026-02-01",100.54,1610.96),("Burleson","2026-02-02",1.1,16.52),("Burleson","2026-02-03",103.78,1434.99),
+    ("Burleson","2026-02-04",94.58,1313.09),("Burleson","2026-02-05",103.01,1500.76),("Burleson","2026-02-06",114.38,1711.5),
+    ("Burleson","2026-02-07",101.05,1417.62),("Burleson","2026-02-08",107.84,1514.87),("Burleson","2026-02-09",1.09,16.35),
+    ("Burleson","2026-02-10",94.3,1382.78),("Burleson","2026-02-11",97.95,1459.1),("Burleson","2026-02-12",99.24,1455.65),
     ("Burleson","2026-02-13",98.07,1363.46),("Burleson","2026-02-14",87.24,1244.12),("Burleson","2026-02-15",90.22,1243.52),
-    ("Burleson","2026-02-17",88.85,1224.97),("Burleson","2026-02-18",93.09,1295.63),("Burleson","2026-02-19",85.71,1190.32),
-    ("Burleson","2026-02-20",101.32,1405.50),("Burleson","2026-02-21",102.25,1495.40),("Burleson","2026-02-22",100.58,1357.75),
-    ("College Station","2026-01-27",222.02,3222.87),("College Station","2026-01-28",210.81,3020.33),("College Station","2026-01-29",263.61,3812.80),
-    ("College Station","2026-01-30",285.55,4009.27),("College Station","2026-01-31",302.23,4390.18),("College Station","2026-02-01",238.32,3527.28),
-    ("College Station","2026-02-03",240.64,3543.27),("College Station","2026-02-04",225.42,3153.26),("College Station","2026-02-05",264.28,3782.41),
-    ("College Station","2026-02-06",299.58,4189.11),("College Station","2026-02-07",318.68,4619.32),("College Station","2026-02-08",242.95,3624.27),
+    ("Burleson","2026-02-16",1.24,18.52),("Burleson","2026-02-17",88.85,1224.97),("Burleson","2026-02-18",93.09,1295.63),
+    ("Burleson","2026-02-19",85.71,1190.32),("Burleson","2026-02-20",101.32,1405.5),("Burleson","2026-02-21",102.25,1495.4),
+    ("Burleson","2026-02-22",100.58,1357.75),
+    ("College Station","2026-01-26",4.02,66.03),("College Station","2026-01-27",222.02,3222.87),("College Station","2026-01-28",210.81,3020.33),
+    ("College Station","2026-01-29",263.61,3812.8),("College Station","2026-01-30",285.55,4009.27),("College Station","2026-01-31",302.23,4390.18),
+    ("College Station","2026-02-01",238.31,3527.28),("College Station","2026-02-02",6.07,101.58),("College Station","2026-02-03",240.64,3543.27),
+    ("College Station","2026-02-04",225.42,3153.26),("College Station","2026-02-05",264.25,3782.41),("College Station","2026-02-06",299.58,4189.11),
+    ("College Station","2026-02-07",318.68,4619.32),("College Station","2026-02-08",242.56,3624.27),("College Station","2026-02-09",4.82,80.58),
     ("College Station","2026-02-10",245.00,3522.56),("College Station","2026-02-11",216.58,3081.18),("College Station","2026-02-12",256.72,3669.77),
-    ("College Station","2026-02-13",309.78,4419.50),("College Station","2026-02-14",292.48,4153.84),("College Station","2026-02-15",235.33,3389.81),
-    ("College Station","2026-02-17",234.57,3418.69),("College Station","2026-02-18",229.97,3261.82),("College Station","2026-02-19",260.01,3683.09),
-    ("College Station","2026-02-20",318.08,4467.52),("College Station","2026-02-21",323.64,4613.14),("College Station","2026-02-22",237.59,3496.51),
-    ("Fayetteville","2026-01-28",181.28,2263.03),("Fayetteville","2026-01-29",180.50,2134.12),("Fayetteville","2026-01-30",229.24,2756.32),
-    ("Fayetteville","2026-01-31",229.64,2968.07),("Fayetteville","2026-02-01",202.81,2850.81),
-    ("Fayetteville","2026-02-03",178.43,2115.27),("Fayetteville","2026-02-04",201.18,2411.68),("Fayetteville","2026-02-05",222.22,2691.54),
-    ("Fayetteville","2026-02-06",244.24,2904.17),("Fayetteville","2026-02-07",207.66,2552.38),("Fayetteville","2026-02-08",179.55,2832.89),
-    ("Fayetteville","2026-02-10",172.40,2112.50),("Fayetteville","2026-02-11",187.91,2349.05),("Fayetteville","2026-02-12",199.74,2519.71),
-    ("Fayetteville","2026-02-13",199.51,2397.03),("Fayetteville","2026-02-14",208.98,2706.82),("Fayetteville","2026-02-15",143.88,2053.19),
-    ("Fayetteville","2026-02-17",152.31,1720.33),("Fayetteville","2026-02-18",153.26,1839.53),("Fayetteville","2026-02-19",130.18,1737.34),
-    ("Fayetteville","2026-02-20",181.94,2208.00),("Fayetteville","2026-02-21",182.53,2435.34),("Fayetteville","2026-02-22",148.59,2187.94),
-    ("San Antonio","2026-01-27",105.82,1088.01),("San Antonio","2026-01-28",109.72,1216.72),("San Antonio","2026-01-29",112.58,1126.99),
-    ("San Antonio","2026-01-30",126.42,1213.82),("San Antonio","2026-01-31",137.36,1358.10),("San Antonio","2026-02-01",100.63,1096.92),
-    ("San Antonio","2026-02-03",103.52,1142.88),("San Antonio","2026-02-04",108.09,1116.60),("San Antonio","2026-02-05",115.18,1141.93),
-    ("San Antonio","2026-02-06",123.83,1227.08),("San Antonio","2026-02-07",125.66,1161.50),("San Antonio","2026-02-08",98.94,1116.34),
-    ("San Antonio","2026-02-10",105.40,1076.03),("San Antonio","2026-02-11",96.78,1041.02),("San Antonio","2026-02-12",108.80,981.61),
-    ("San Antonio","2026-02-13",113.31,1102.71),("San Antonio","2026-02-14",119.39,1226.12),("San Antonio","2026-02-15",98.05,1047.61),
-    ("San Antonio","2026-02-17",106.23,1041.80),("San Antonio","2026-02-18",117.50,1203.34),("San Antonio","2026-02-19",124.28,1170.71),
-    ("San Antonio","2026-02-20",131.92,1192.61),("San Antonio","2026-02-21",139.51,1358.20),("San Antonio","2026-02-22",108.34,1313.50),
-    ("San Marcos","2026-01-27",113.53,1767.33),("San Marcos","2026-01-28",112.52,1759.61),("San Marcos","2026-01-29",120.49,1904.44),
-    ("San Marcos","2026-01-30",131.49,2041.97),("San Marcos","2026-01-31",136.11,2096.60),("San Marcos","2026-02-01",110.07,1666.68),
-    ("San Marcos","2026-02-03",118.61,1836.91),("San Marcos","2026-02-04",118.60,1829.93),("San Marcos","2026-02-05",122.45,1914.02),
-    ("San Marcos","2026-02-06",139.09,2171.14),("San Marcos","2026-02-07",138.58,2128.44),("San Marcos","2026-02-08",108.16,1635.13),
-    ("San Marcos","2026-02-10",113.06,1751.85),("San Marcos","2026-02-11",112.49,1762.20),("San Marcos","2026-02-12",119.69,1889.25),
-    ("San Marcos","2026-02-13",133.72,2078.48),("San Marcos","2026-02-14",136.70,2109.37),("San Marcos","2026-02-15",105.74,1604.66),
-    ("San Marcos","2026-02-17",104.65,1619.70),("San Marcos","2026-02-18",116.38,1811.22),("San Marcos","2026-02-19",127.45,1993.56),
-    ("San Marcos","2026-02-20",135.43,2081.30),("San Marcos","2026-02-21",145.89,2249.12),("San Marcos","2026-02-22",119.16,1896.58),
-    ("Waco","2026-01-27",95.51,1328.66),("Waco","2026-01-28",107.04,1437.14),("Waco","2026-01-29",126.65,1673.02),
-    ("Waco","2026-01-30",148.96,2048.21),("Waco","2026-01-31",153.44,2114.44),("Waco","2026-02-01",113.43,1541.12),
-    ("Waco","2026-02-03",129.23,1885.11),("Waco","2026-02-04",109.51,1554.43),("Waco","2026-02-05",129.75,1882.23),
-    ("Waco","2026-02-06",138.15,1954.44),("Waco","2026-02-07",133.80,1983.80),("Waco","2026-02-08",115.78,1687.96),
-    ("Waco","2026-02-10",117.27,1710.63),("Waco","2026-02-11",123.16,1805.61),("Waco","2026-02-12",114.34,1687.78),
-    ("Waco","2026-02-13",139.82,1980.79),("Waco","2026-02-14",117.86,1689.29),("Waco","2026-02-15",107.39,1513.45),
-    ("Waco","2026-02-17",115.62,1735.21),("Waco","2026-02-18",125.26,1805.30),("Waco","2026-02-19",119.02,1721.93),
-    ("Waco","2026-02-20",156.80,2330.90),("Waco","2026-02-21",148.71,2146.98),("Waco","2026-02-22",115.95,1679.09),
+    ("College Station","2026-02-13",309.78,4419.5),("College Station","2026-02-14",292.48,4153.84),("College Station","2026-02-15",235.33,3389.81),
+    ("College Station","2026-02-16",6.30,105.22),("College Station","2026-02-17",234.57,3418.69),("College Station","2026-02-18",229.97,3261.82),
+    ("College Station","2026-02-19",260.01,3683.09),("College Station","2026-02-20",318.08,4467.52),("College Station","2026-02-21",323.64,4613.14),
+    ("College Station","2026-02-22",237.26,3496.51),
+    ("Fayetteville","2026-01-27",0,0),("Fayetteville","2026-01-28",181.28,2263.03),("Fayetteville","2026-01-29",180.5,2134.12),
+    ("Fayetteville","2026-01-30",225.96,2756.32),("Fayetteville","2026-01-31",229.36,2968.07),("Fayetteville","2026-02-01",202.81,2850.81),
+    ("Fayetteville","2026-02-02",1.77,28.03),("Fayetteville","2026-02-03",177.93,2115.27),("Fayetteville","2026-02-04",201.18,2411.68),
+    ("Fayetteville","2026-02-05",222.22,2691.54),("Fayetteville","2026-02-06",242.98,2904.17),("Fayetteville","2026-02-07",207.66,2552.38),
+    ("Fayetteville","2026-02-08",179.55,2832.89),("Fayetteville","2026-02-09",1.28,20.88),("Fayetteville","2026-02-10",172.4,2112.5),
+    ("Fayetteville","2026-02-11",187.91,2349.05),("Fayetteville","2026-02-12",199.74,2519.71),("Fayetteville","2026-02-13",199.5,2397.03),
+    ("Fayetteville","2026-02-14",208.98,2706.82),("Fayetteville","2026-02-15",143.88,2053.19),("Fayetteville","2026-02-16",0.95,16.12),
+    ("Fayetteville","2026-02-17",150.53,1720.33),("Fayetteville","2026-02-18",151.25,1839.53),("Fayetteville","2026-02-19",127.85,1737.34),
+    ("Fayetteville","2026-02-20",181.94,2208.0),("Fayetteville","2026-02-21",182.53,2435.34),("Fayetteville","2026-02-22",148.59,2187.94),
+    ("San Antonio","2026-01-26",1.19,19.16),("San Antonio","2026-01-27",102.81,1088.01),("San Antonio","2026-01-28",107.07,1216.72),
+    ("San Antonio","2026-01-29",109.08,1126.99),("San Antonio","2026-01-30",122.38,1213.82),("San Antonio","2026-01-31",133.18,1358.1),
+    ("San Antonio","2026-02-01",98.38,1096.92),("San Antonio","2026-02-02",1.04,16.01),("San Antonio","2026-02-03",100.89,1142.88),
+    ("San Antonio","2026-02-04",104.33,1116.6),("San Antonio","2026-02-05",111.82,1141.93),("San Antonio","2026-02-06",119.63,1227.08),
+    ("San Antonio","2026-02-07",120.87,1161.5),("San Antonio","2026-02-08",97.41,1116.34),("San Antonio","2026-02-09",1.96,32.83),
+    ("San Antonio","2026-02-10",102.48,1076.03),("San Antonio","2026-02-11",94.54,1041.02),("San Antonio","2026-02-12",105.47,981.61),
+    ("San Antonio","2026-02-13",110.36,1102.71),("San Antonio","2026-02-14",116.45,1226.12),("San Antonio","2026-02-15",95.28,1047.61),
+    ("San Antonio","2026-02-16",1.86,31.02),("San Antonio","2026-02-17",102.47,1041.8),("San Antonio","2026-02-18",115.09,1203.34),
+    ("San Antonio","2026-02-19",119.56,1170.71),("San Antonio","2026-02-20",125.61,1192.61),("San Antonio","2026-02-21",133.74,1358.2),
+    ("San Antonio","2026-02-22",105.96,1313.5),
+    ("San Marcos","2026-01-26",1.44,23.48),("San Marcos","2026-01-27",113.53,1767.33),("San Marcos","2026-01-28",112.52,1759.61),
+    ("San Marcos","2026-01-29",120.49,1904.44),("San Marcos","2026-01-30",131.49,2041.97),("San Marcos","2026-01-31",136.11,2096.6),
+    ("San Marcos","2026-02-01",110.07,1666.68),("San Marcos","2026-02-02",1.46,23.81),("San Marcos","2026-02-03",118.61,1836.91),
+    ("San Marcos","2026-02-04",117.62,1829.93),("San Marcos","2026-02-05",122.45,1914.02),("San Marcos","2026-02-06",139.09,2171.14),
+    ("San Marcos","2026-02-07",138.58,2128.44),("San Marcos","2026-02-08",108.16,1635.13),("San Marcos","2026-02-09",1.53,25.0),
+    ("San Marcos","2026-02-10",113.06,1751.85),("San Marcos","2026-02-11",112.49,1762.2),("San Marcos","2026-02-12",119.69,1889.25),
+    ("San Marcos","2026-02-13",133.72,2078.48),("San Marcos","2026-02-14",136.7,2109.37),("San Marcos","2026-02-15",105.74,1604.66),
+    ("San Marcos","2026-02-16",1.69,27.67),("San Marcos","2026-02-17",104.65,1619.7),("San Marcos","2026-02-18",116.38,1811.22),
+    ("San Marcos","2026-02-19",127.45,1993.56),("San Marcos","2026-02-20",135.43,2081.3),("San Marcos","2026-02-21",145.89,2249.12),
+    ("San Marcos","2026-02-22",119.16,1896.58),
+    ("Waco","2026-01-26",3.35,66.1),("Waco","2026-01-27",90.78,1328.66),("Waco","2026-01-28",103.35,1437.14),
+    ("Waco","2026-01-29",122.15,1673.02),("Waco","2026-01-30",146.38,2048.21),("Waco","2026-01-31",147.54,2114.44),
+    ("Waco","2026-02-01",111.88,1541.12),("Waco","2026-02-02",1.98,39.6),("Waco","2026-02-03",125.02,1885.11),
+    ("Waco","2026-02-04",105.67,1554.43),("Waco","2026-02-05",127.62,1882.23),("Waco","2026-02-06",134.34,1954.44),
+    ("Waco","2026-02-07",132.26,1983.8),("Waco","2026-02-08",113.75,1687.96),("Waco","2026-02-09",2.01,41.38),
+    ("Waco","2026-02-10",112.76,1710.63),("Waco","2026-02-11",121.27,1805.61),("Waco","2026-02-12",113.85,1687.78),
+    ("Waco","2026-02-13",135.74,1980.79),("Waco","2026-02-14",115.45,1689.29),("Waco","2026-02-15",106.33,1513.45),
+    ("Waco","2026-02-16",3.02,60.35),("Waco","2026-02-17",115.13,1735.21),("Waco","2026-02-18",121.54,1805.3),
+    ("Waco","2026-02-19",116.93,1721.93),("Waco","2026-02-20",154.12,2330.9),("Waco","2026-02-21",147.05,2146.98),
+    ("Waco","2026-02-22",114.67,1679.09),
 ]
 
 scheduled_raw = [
@@ -490,8 +501,51 @@ sys_cat_py = sum(v["cat_py_amt"] for v in loc_data.values())
 sys_sch = sum(v["sch_hrs"] for v in loc_data.values())
 
 # ============================================================
-# AI INSIGHT GENERATION
+# PRIOR PERIOD CONTEXT (Dec 29 – Jan 25) for AI Insights
 # ============================================================
+prior_sales = {
+    "Burleson": {"cy": 109715.37, "py": 0},
+    "College Station": {"cy": 416414.20, "py": 463986.86},
+    "Fayetteville": {"cy": 143846.99, "py": 0},
+    "San Antonio": {"cy": 163016.01, "py": 179578.35},
+    "San Marcos": {"cy": 179371.44, "py": 192841.30},
+    "Waco": {"cy": 150045.16, "py": 159812.03},
+}
+prior_labor = {
+    "Burleson": {"hours": 2563.39, "pay": 36127.17},
+    "College Station": {"hours": 5334.24, "pay": 76606.72},
+    "Fayetteville": {"hours": 4747.52, "pay": 58641.60},
+    "San Antonio": {"hours": 2538.44, "pay": 28235.11},
+    "San Marcos": {"hours": 3108.45, "pay": 48073.69},
+    "Waco": {"hours": 2601.69, "pay": 38079.12},
+}
+prior_catering = {
+    "Burleson": 470.83, "College Station": 11956.15, "Fayetteville": 1078.96,
+    "San Antonio": 1826.06, "San Marcos": 475.33, "Waco": 11397.57,
+}
+
+# Compute prior period metrics
+prior_comp_cy = sum(prior_sales[l]["cy"] for l in comp_locs)
+prior_comp_py = sum(prior_sales[l]["py"] for l in comp_locs)
+prior_sys_sss = pct_chg(prior_comp_cy, prior_comp_py) if prior_comp_py else None
+prior_sys_amt = sum(v["cy"] for v in prior_sales.values())
+prior_sys_pay = sum(v["pay"] for v in prior_labor.values())
+prior_sys_hrs = sum(v["hours"] for v in prior_labor.values())
+prior_sys_lp = (prior_sys_pay / prior_sys_amt * 100) if prior_sys_amt else 0
+prior_sys_cat = sum(prior_catering.values())
+
+# Per-location prior SSS
+prior_loc_sss = {}
+for loc in comp_locs:
+    ps = prior_sales[loc]
+    prior_loc_sss[loc] = pct_chg(ps["cy"], ps["py"]) if ps["py"] else None
+
+# Per-location prior labor %
+prior_loc_lp = {}
+for loc in LOCATIONS:
+    ps = prior_sales[loc]["cy"]
+    pp = prior_labor[loc]["pay"]
+    prior_loc_lp[loc] = (pp / ps * 100) if ps else 0
 sales_ranks = rank_items(loc_data, "amount", reverse=True)
 labor_ranks = rank_items(loc_data, "vs_guide_pct", reverse=False)
 cat_ranks = rank_items(loc_data, "cat_amt", reverse=True)
@@ -507,54 +561,55 @@ def traj(loc, key):
     return [loc_weekly[loc][wi].get(key, 0) for wi in [3,2,1,0]]
 
 sales_callout = (
-    f"<strong>College Station</strong> generated {fm(loc_data['College Station']['amount'])} over 4 weeks, "
-    f"more than all other locations combined — with a strong {loc_data['College Station']['sss']:+.1f}% SSS. "
-    f"Their weekly trajectory shows consistency: "
-    f"{fm(traj('College Station','amount')[0])} → {fm(traj('College Station','amount')[1])} → "
-    f"{fm(traj('College Station','amount')[2])} → {fm(traj('College Station','amount')[3])}. "
-    f"<strong>San Marcos</strong> has shown upward momentum, growing from "
-    f"{fm(traj('San Marcos','amount')[0])} to {fm(traj('San Marcos','amount')[3])} over the period, "
-    f"finishing with {loc_data['San Marcos']['sss']:+.1f}% SSS. "
-    f"<strong>Waco</strong> at {loc_data['Waco']['sss']:+.1f}% SSS is trending positively week-over-week. "
-    f"<strong>San Antonio</strong>'s {loc_data['San Antonio']['sss']:+.1f}% SSS reflects a {loc_data['San Antonio']['labor_pct']:.1f}% labor ratio — "
-    f"the best in the system — but traffic comparisons bear watching."
+    f"System comp sales swung from <strong>{prior_sys_sss:+.1f}%</strong> in the prior 4-week window "
+    f"to <strong>{sys_sss:+.1f}%</strong> this period — a meaningful trajectory shift. "
+    f"<strong>College Station</strong> drove the turnaround, flipping from {prior_loc_sss.get('College Station',0):+.1f}% to "
+    f"{loc_data['College Station']['sss']:+.1f}%, with the Feb 16 week ({fm(traj('College Station','amount')[3])}) their strongest in the window. "
+    f"<strong>San Marcos</strong> improved from {prior_loc_sss.get('San Marcos',0):+.1f}% to {loc_data['San Marcos']['sss']:+.1f}% "
+    f"and posted an accelerating weekly trend — their Feb 16 week ({fm(traj('San Marcos','amount')[3])}) was the best of the trailing 8 weeks. "
+    f"<strong>San Antonio</strong> narrowed its comp gap from {prior_loc_sss.get('San Antonio',0):+.1f}% to {loc_data['San Antonio']['sss']:+.1f}%, "
+    f"but the transaction decline ({loc_data['San Antonio']['sst']:+.1f}% SST) flags a traffic problem — ticket growth is masking it. "
+    f"<strong>Burleson</strong> grew {pct_chg(loc_data['Burleson']['amount'], prior_sales['Burleson']['cy']):+.1f}% period-over-period as the ramp continues."
 )
 
 labor_callout = (
-    f"<strong>San Antonio</strong> ran the tightest labor at {loc_data['San Antonio']['labor_pct']:.1f}% — "
-    f"best in the system by a wide margin, with an SPLH of {fm(loc_data['San Antonio']['splh'],2)}. "
-    f"<strong>Burleson's</strong> 4-week labor trajectory tells a great new-store story: "
-    f"{traj('Burleson','labor_pct')[0]:.1f}% → {traj('Burleson','labor_pct')[1]:.1f}% → "
-    f"{traj('Burleson','labor_pct')[2]:.1f}% → {traj('Burleson','labor_pct')[3]:.1f}%, scaling efficiently as volume grew. "
-    f"<strong>Fayetteville</strong> is the system's labor outlier at {loc_data['Fayetteville']['labor_pct']:.1f}% — "
-    f"context matters as their AGM allowance ramped down from 300 → 150 hrs/wk, but even accounting for that, "
-    f"the gap to guideline ({loc_data['Fayetteville']['vs_guide_pct']:.1f}%) needs attention. "
-    f"<strong>College Station</strong> runs at {loc_data['College Station']['labor_pct']:.1f}% with the highest SPLH "
-    f"({fm(loc_data['College Station']['splh'],2)}) — volume is the great equalizer for labor efficiency."
+    f"System labor tightened from <strong>{prior_sys_lp:.1f}%</strong> in the prior 4-week window to "
+    f"<strong>{sys_lp:.1f}%</strong> this period — a 3+ point improvement driven by both higher sales and better scheduling discipline. "
+    f"<strong>San Antonio</strong> dropped from {prior_loc_lp['San Antonio']:.1f}% to {loc_data['San Antonio']['labor_pct']:.1f}%, "
+    f"the tightest in the system — but verify this isn't understaffing given their negative transaction comps. "
+    f"<strong>Fayetteville</strong> improved from {prior_loc_lp['Fayetteville']:.1f}% to {loc_data['Fayetteville']['labor_pct']:.1f}% as AGM hours "
+    f"ramped down from 350 → 150 hrs/wk across the window. The gap to guideline ({loc_data['Fayetteville']['vs_guide_pct']:.1f}%) "
+    f"should continue narrowing as training hours phase out completely. "
+    f"<strong>Burleson</strong> cut from {prior_loc_lp['Burleson']:.1f}% to {loc_data['Burleson']['labor_pct']:.1f}% — "
+    f"a textbook new-store labor ramp. Sharing their scheduling approach with Fayetteville could accelerate that store's normalization."
 )
 
 reviews_callout = (
-    f"<strong>San Marcos</strong> is the system's review leader with a {loc_data['San Marcos']['wavg_rating']:.2f} weighted average "
-    f"across {loc_data['San Marcos']['total_rev_n']} reviews — their {loc_data['San Marcos']['google_r']:.1f} Google score "
-    f"and {loc_data['San Marcos']['ovation_r']:.2f} Ovation are both system-best. "
-    f"<strong>College Station</strong> is close behind at {loc_data['College Station']['wavg_rating']:.2f} "
-    f"with {loc_data['College Station']['total_rev_n']} reviews — impressive given their volume. "
-    f"<strong>Waco's</strong> Ovation score of {loc_data['Waco']['ovation_r']:.2f} is the lowest in the system and warrants "
-    f"investigation — their Google at {loc_data['Waco']['google_r']:.1f} is middling too. "
-    f"<strong>Burleson</strong> has the most reviews ({loc_data['Burleson']['total_rev_n']}) but their Google score "
-    f"({loc_data['Burleson']['google_r']:.2f}) is pulling their weighted average down to {loc_data['Burleson']['wavg_rating']:.2f}."
+    f"<strong>San Marcos</strong> leads with a {loc_data['San Marcos']['wavg_rating']:.2f} weighted average — "
+    f"their {loc_data['San Marcos']['google_r']:.1f} Google score stands out as system-best and a real competitive advantage for discovery. "
+    f"<strong>Waco's</strong> {loc_data['Waco']['wavg_rating']:.2f} weighted average (Ovation {loc_data['Waco']['ovation_r']:.2f}, "
+    f"Google {loc_data['Waco']['google_r']:.1f}) is the system floor — investigate whether this ties to the labor tightening "
+    f"(labor% dropped from {prior_loc_lp['Waco']:.1f}% → {loc_data['Waco']['labor_pct']:.1f}%) or specific service gaps. "
+    f"<strong>Fayetteville's</strong> Google score ({loc_data['Fayetteville']['google_r']:.2f}) pulls down an otherwise strong "
+    f"Ovation ({loc_data['Fayetteville']['ovation_r']:.2f}) — the {loc_data['Fayetteville']['google_n']} Google reviews likely include "
+    f"early growing-pains ratings that will dilute over time. "
+    f"Review volume system-wide ({sum(loc_data[l]['total_rev_n'] for l in LOCATIONS)} reviews over 4 weeks) is healthy — "
+    f"keep Ovation prompts consistent."
 )
 
+cat_dir = "up" if sys_cat > prior_sys_cat else "down"
 catering_callout = (
-    f"<strong>Waco</strong> leads catering at {fm(loc_data['Waco']['cat_amt'])} with "
-    f"{loc_data['Waco']['cat_ords']} orders — a standout with clear week-over-week growth "
-    f"({fm(traj('Waco','cat_amt')[0])} → {fm(traj('Waco','cat_amt')[1])} → "
-    f"{fm(traj('Waco','cat_amt')[2])} → {fm(traj('Waco','cat_amt')[3])}). "
-    f"<strong>College Station</strong> had {fm(loc_data['College Station']['cat_amt'])} but lumpy — "
-    f"their Jan 26 week ({fm(traj('College Station','cat_amt')[0])}) was exceptionally strong. "
-    f"<strong>San Antonio</strong> is building steadily at {fm(loc_data['San Antonio']['cat_amt'])} across 14 orders. "
-    f"<strong>San Marcos</strong> and <strong>Fayetteville</strong> remain underdeveloped in catering "
-    f"({fm(loc_data['San Marcos']['cat_amt'])} and {fm(loc_data['Fayetteville']['cat_amt'])} respectively) — opportunity exists."
+    f"System catering came in at {fm(sys_cat)}, {cat_dir} from {fm(prior_sys_cat)} in the prior 4-week window"
+    f"{' — College Station drove the lift with ' + fm(loc_data['College Station']['cat_amt']) + ' vs ' + fm(prior_catering['College Station']) + ' prior.' if sys_cat > prior_sys_cat else '.'} "
+    f"<strong>Waco</strong> held steady ({fm(loc_data['Waco']['cat_amt'])} vs {fm(prior_catering['Waco'])} prior) and leads the system "
+    f"in catering consistency — their avg order size of "
+    f"{fm(loc_data['Waco']['cat_amt']/loc_data['Waco']['cat_ords'],2) if loc_data['Waco']['cat_ords'] else '$0'} "
+    f"suggests corporate/event-level business worth protecting with a dedicated contact. "
+    f"<strong>San Antonio</strong> grew catering from {fm(prior_catering['San Antonio'])} → {fm(loc_data['San Antonio']['cat_amt'])} — "
+    f"a potential offset to their declining dine-in traffic. "
+    f"<strong>San Marcos</strong> ({fm(loc_data['San Marcos']['cat_amt'])}) and <strong>Fayetteville</strong> "
+    f"({fm(loc_data['Fayetteville']['cat_amt'])}) remain underdeveloped — "
+    f"targeted local business outreach could unlock an incremental revenue stream at both."
 )
 
 # ============================================================
@@ -600,7 +655,7 @@ for ws_i in WEEK_STARTS:
         f'<td>{b(fm(sw["cat_amt"]))}</td></tr>')
 
 # 4-week total row
-trends_rows += (f'<tr class="total-row"><td><strong>4-Wk Total</strong></td><td><strong>{fm(sys_amt)}</strong></td>'
+trends_rows += (f'<tr class="total-row"><td><strong>Total</strong></td><td><strong>{fm(sys_amt)}</strong></td>'
     f'<td>{pill_sss(sys_sss)}</td><td><strong>{fn(sys_ords)}</strong></td><td>{pill_sss(sys_sst)}</td>'
     f'<td><strong>{fm(sys_tkt,2)}</strong></td>'
     f'<td><strong>{fn(sys_guide,0)}</strong></td>'
@@ -666,17 +721,12 @@ cat_rs_rows += (f'<tr class="total-row"><td></td><td>SYSTEM</td><td>{fn(sys_cat_
 # GM MESSAGE
 # ============================================================
 gm_msg = (
-    f"Over the trailing 4-week period ({REPORT_PERIOD}), Fuego Tortilla Grill generated "
-    f"{fm(sys_amt)} in system-wide sales across 6 locations on {fn(sys_ords,0)} orders ({fm(sys_tkt,2)} avg ticket). "
-    f"Comparable stores posted {abs(sys_sss):.1f}% {'growth' if sys_sss>=0 else 'decline'} in same-store sales "
-    f"and {'up' if sys_sst and sys_sst>=0 else 'down'} {abs(sys_sst):.1f}% in same-store transactions vs prior year. "
-    f"System labor came in at {sys_lp:.1f}% ({fm(sys_pay)} on {fn(sys_hrs,0)} hours), "
-    f"running {fn(abs(sys_hrs-sys_guide),0)} hours {'over' if sys_hrs>sys_guide else 'under'} the combined guideline "
-    f"({pill_labor_ratio(sys_hrs,sys_guide)}). "
-    f"College Station continues to be the volume anchor, while San Antonio leads in labor efficiency. "
-    f"Catering generated {fm(sys_cat)} ({fn(sys_cat_ords,0)} orders) with Waco leading the charge. "
-    f"San Marcos is the review leader. Key focus areas: Fayetteville's labor normalization, "
-    f"Waco's guest satisfaction, and scaling catering at San Marcos and Fayetteville."
+    f"Over the trailing 4-week period ({REPORT_PERIOD}), the Fuego system posted "
+    f"{fm(sys_amt)} across {fn(sys_ords,0)} orders ({fm(sys_tkt,2)} avg ticket). "
+    f"Comp same-store sales came in at {sys_sss:+.1f}%, a significant improvement from {prior_sys_sss:+.1f}% in the prior 4-week window. "
+    f"System labor tightened to {sys_lp:.1f}% (from {prior_sys_lp:.1f}% prior), "
+    f"running at {sys_hrs/sys_guide*100:.1f}% of guideline. "
+    f"Catering delivered {fm(sys_cat)} system-wide."
 )
 
 # ============================================================
@@ -696,13 +746,13 @@ CSS = """
 body { font-family: 'Source Sans 3','Myriad Pro',-apple-system,BlinkMacSystemFont,sans-serif;
   background: var(--bg); color: var(--text-primary); line-height: 1.4;
   -webkit-font-smoothing: antialiased; font-size: 11px; }
-.report-container { max-width: 100%; margin: 0 auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+.report-container { max-width: 100%; margin: 0 auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
 .header { border-radius: 10px; padding: 12px 20px; color: #fff; position: relative; overflow: hidden; }
-.header-b3 { background: var(--fuego-charcoal); text-align: center; padding: 24px 20px 20px; position: relative; }
+.header-b3 { background: var(--fuego-charcoal); text-align: center; padding: 20px 20px 16px; position: relative; }
 .header-b3-tag { display: inline-block; font-size: 8px; font-weight: 700; letter-spacing: 2px;
   text-transform: uppercase; padding: 2px 10px; border-radius: 3px; margin-bottom: 8px;
   background: rgba(134,202,199,0.15); color: var(--fuego-teal); border: 1px solid rgba(134,202,199,0.3); }
-.header-b3 h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px;
+.header-b3 h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px;
   text-shadow: 0 0 40px rgba(134,202,199,0.2); }
 .header-b3-meta { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; opacity: 0.75; }
 .header-b3-pill { font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 14px; border: 1px solid rgba(134,202,199,0.5); color: var(--fuego-teal); }
@@ -712,11 +762,11 @@ body { font-family: 'Source Sans 3','Myriad Pro',-apple-system,BlinkMacSystemFon
 .b3-v5 .b3-bar-top { height: 2px; background: var(--fuego-teal); box-shadow: 0 0 12px rgba(134,202,199,0.6); }
 .b3-v5 .b3-bar-bottom { height: 2px; background: var(--fuego-teal); box-shadow: 0 0 12px rgba(134,202,199,0.6); }
 .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.kpi-card { background: var(--card-bg); border-radius: 8px; padding: 12px 14px;
+.kpi-card { background: var(--card-bg); border-radius: 8px; padding: 10px 12px;
   border: 1px solid var(--border); border-top: 3px solid var(--fuego-teal); }
-.kpi-card .kpi-label { font-size: 9px; font-weight: 500; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.kpi-card .kpi-value { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+.kpi-card .kpi-label { font-size: 8px; font-weight: 500; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.kpi-card .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
 .kpi-card .kpi-change { display: inline-flex; align-items: center; gap: 3px;
   font-size: 9px; font-weight: 600; margin-top: 6px; padding: 2px 8px; border-radius: 4px; }
 .kpi-change.positive { color: var(--green); background: var(--green-bg); }
@@ -724,11 +774,11 @@ body { font-family: 'Source Sans 3','Myriad Pro',-apple-system,BlinkMacSystemFon
 .kpi-change.neutral { color: var(--yellow); background: var(--yellow-bg); }
 .gm-message { background: linear-gradient(135deg, #f9f6f3, #f0ebe5);
   border: 1px solid var(--fuego-tan); border-left: 4px solid var(--fuego-teal);
-  border-radius: 8px; padding: 14px 18px; font-size: 10.5px; line-height: 1.6; }
+  border-radius: 8px; padding: 10px 14px; font-size: 10px; line-height: 1.5; }
 .gm-message .gm-label { font-size: 9px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 1px; color: #5a9e9b; margin-bottom: 6px; }
 .section { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
-.section-header { display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+.section-header { display: flex; align-items: center; gap: 6px; padding: 6px 12px;
   border-bottom: 1px solid var(--border); background: #f9f6f3; border-left: 3px solid var(--fuego-teal); }
 .section-header .icon { width: 22px; height: 22px; border-radius: 4px;
   display: flex; align-items: center; justify-content: center; font-size: 11px; }
@@ -738,34 +788,33 @@ body { font-family: 'Source Sans 3','Myriad Pro',-apple-system,BlinkMacSystemFon
 .icon-catering { background: #e0f2eb; color: var(--green); }
 .section-header h2 { font-size: 11px; font-weight: 700; }
 .section-header .section-sub { font-size: 8px; color: var(--text-secondary); margin-left: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-thead th { padding: 6px 7px; text-align: right; font-weight: 600; font-size: 8px;
+table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+thead th { padding: 5px 5px; text-align: right; font-weight: 600; font-size: 7.5px;
   text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-secondary);
   border-bottom: 2px solid var(--border); white-space: nowrap; }
 thead th:first-child { text-align: left; }
-tbody td { padding: 6px 7px; text-align: right; border-bottom: 1px solid #ede7e0; white-space: nowrap; }
+tbody td { padding: 5px 5px; text-align: right; border-bottom: 1px solid #ede7e0; white-space: nowrap; }
 tbody td:first-child { text-align: left; font-weight: 600; }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: #faf7f4; }
 tbody tr.total-row { background: #f7f3ef; font-weight: 700; }
 tbody tr.total-row td { border-top: 2px solid var(--border); }
 tbody tr.highlight { background: #f5efe9; }
-.pill { display: inline-block; padding: 1px 5px; border-radius: 4px; font-weight: 600; font-size: 9px; }
+.pill { display: inline-block; padding: 1px 4px; border-radius: 4px; font-weight: 600; font-size: 8.5px; }
 .pill-green { color: var(--green); background: var(--green-bg); }
 .pill-red { color: var(--red); background: var(--red-bg); }
 .pill-yellow { color: var(--yellow); background: var(--yellow-bg); }
 .pill-neutral { color: var(--text-secondary); background: #ede7e0; }
-.rank { display: inline-block; padding: 1px 6px; border-radius: 4px; font-weight: 700; font-size: 9px; }
+.rank { display: inline-block; padding: 1px 5px; border-radius: 4px; font-weight: 700; font-size: 8.5px; }
 .rank-1 { color: #fff; background: var(--green); }
 .rank-2 { color: var(--green); background: var(--green-bg); }
 .rank-3 { color: var(--yellow); background: var(--yellow-bg); }
 .rank-mid { color: var(--text-secondary); background: #ede7e0; }
 .rank-last { color: var(--red); background: var(--red-bg); }
-.ai-callout { padding: 10px 14px; font-size: 9.5px; line-height: 1.55; color: var(--text-primary);
+.ai-callout { padding: 8px 12px; font-size: 9px; line-height: 1.5; color: var(--text-primary);
   background: linear-gradient(135deg, #edf7f6, #f4f0ec); border-top: 1px dashed var(--fuego-teal); }
 .ai-callout .ai-label { font-size: 8px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 1px; color: #5a9e9b; margin-bottom: 4px; }
-.footer { text-align: center; font-size: 8px; color: var(--text-secondary); padding: 8px 0; }
 @media print {
   body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .report-container { max-width: 100%; padding: 4px; }
@@ -779,7 +828,7 @@ tbody tr.highlight { background: #f5efe9; }
 # ============================================================
 html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <title>Fuego System – 4-Week Consolidated Rack & Stack – {REPORT_PERIOD}</title>
-<style>@page{{size:A4 portrait;margin:0.3in;}}{CSS}</style></head><body>
+<style>@page{{size:A4 portrait;margin:0.25in;}}{CSS}</style></head><body>
 <div class="report-container">
 <div class="header header-b3 b3-v5"><div class="b3-bar-top"></div><div class="header-b-inner"><div class="header-b3-tag">4-WEEK CONSOLIDATED RACK &amp; STACK</div><h1>Fuego Tortilla Grill</h1><div class="header-b3-meta"><span class="header-b3-pill">All 6 Locations</span><span class="header-b3-dot">&bull;</span><span>{REPORT_PERIOD}</span></div></div><div class="b3-bar-bottom"></div></div>
 <div class="kpi-row">
@@ -795,7 +844,6 @@ html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <div class="section"><div class="section-header"><div class="icon icon-labor">&#128101;</div><h2>Labor Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by vs Guide %</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Sales</th><th>Guide Hrs</th><th>Sch Hrs</th><th>Hours</th><th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>SPLH</th></tr></thead><tbody>{labor_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{labor_callout}</div></div>
 <div class="section"><div class="section-header"><div class="icon icon-reviews">&#11088;</div><h2>Reviews Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by Weighted Avg Rating</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Google</th><th>#</th><th>Ovation</th><th>#</th><th>Yelp</th><th>#</th><th>Wtd Avg</th><th>Total #</th></tr></thead><tbody>{reviews_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{reviews_callout}</div></div>
 <div class="section"><div class="section-header"><div class="icon icon-catering">&#127919;</div><h2>Catering Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by Catering $</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Orders</th><th>Cat $</th><th>Cat $ PY</th><th>vs PY</th></tr></thead><tbody>{cat_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{catering_callout}</div></div>
-<div class="footer">Generated on {TODAY_STR} &middot; Fuego Tortilla Grill – System Report &middot; Data sourced from Chabi Analytics</div>
 </div></body></html>"""
 
 # ============================================================
