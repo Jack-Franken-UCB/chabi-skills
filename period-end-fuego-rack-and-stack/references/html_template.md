@@ -206,35 +206,35 @@ tbody tr.highlight { background: #f5efe9; }
   <!-- KPI CARDS (5 across) -->
   <div class="kpi-row">
     <div class="kpi-card">
-      <div class="kpi-label">{N}-Wk System Sales</div>
+      <div class="kpi-label">System Sales</div>
       <div class="kpi-value">{fm(sys_amt)}</div>
-      {kpi_badge(sys_sss, "vs PY Comps")}
+      {kpi_badge(sys_sss, "SSS (Comp)")}
     </div>
     <div class="kpi-card">
       <div class="kpi-label">System Orders</div>
       <div class="kpi-value">{fn(sys_ords)}</div>
-      {kpi_badge(sys_sst, "vs PY Comps")}
+      {kpi_badge(sys_sst, "SST (Comp)")}
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Avg Ticket</div>
       <div class="kpi-value">{fm(sys_tkt, 2)}</div>
-      {kpi_badge(sys_tkt_chg, "vs PY Comps")}
+      {kpi_badge(sys_tkt_chg, "vs PY (Comp)")}
     </div>
     <div class="kpi-card">
       <div class="kpi-label">System Labor %</div>
       <div class="kpi-value">{sys_lp:.1f}%</div>
-      <div class="kpi-change ...">{fm(sys_pay)} total</div>
+      <div class="kpi-change ...">{vs_guide_pct:.1f}% of Guide</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">{N}-Wk Catering</div>
+      <div class="kpi-label">Catering</div>
       <div class="kpi-value">{fm(sys_cat)}</div>
-      <div class="kpi-change neutral">{fn(sys_cat_ords)} orders</div>
+      <div class="kpi-change neutral">System Total</div>
     </div>
   </div>
 
   <!-- SYSTEM SUMMARY -->
   <div class="gm-message">
-    <div class="gm-label">System Summary — {N}-Week Consolidated View</div>
+    <div class="gm-label">System Summary</div>
     {gm_msg}
   </div>
 
@@ -250,9 +250,9 @@ tbody tr.highlight { background: #f5efe9; }
         <tr>
           <th>Week</th><th>Sales</th><th>SSS %</th>
           <th>Orders</th><th>SST %</th><th>Avg Tkt</th>
-          <th>Guide Hrs</th><th>Sch Hrs</th><th>Actual Hrs</th>
+          <th>Guide Hrs</th><th>Hours</th>
           <th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th>
-          <th>SPLH</th><th>Catering</th>
+          <th>Catering</th>
         </tr>
       </thead>
       <tbody>
@@ -267,7 +267,7 @@ tbody tr.highlight { background: #f5efe9; }
     <div class="section-header">
       <div class="icon icon-sales">💰</div>
       <h2>Sales Rack &amp; Stack</h2>
-      <div class="section-sub">{REPORT_PERIOD} – {N}-Wk Totals, Ranked by Sales</div>
+      <div class="section-sub">{REPORT_PERIOD} – Ranked by Sales</div>
     </div>
     <table>
       <thead>
@@ -290,13 +290,13 @@ tbody tr.highlight { background: #f5efe9; }
     <div class="section-header">
       <div class="icon icon-labor">👥</div>
       <h2>Labor Rack &amp; Stack</h2>
-      <div class="section-sub">{REPORT_PERIOD} – {N}-Wk Totals, Ranked by vs Guide %</div>
+      <div class="section-sub">{REPORT_PERIOD} – Ranked by vs Guide %</div>
     </div>
     <table>
       <thead>
         <tr>
           <th>Rank</th><th>Location</th><th>{N}-Wk Sales</th>
-          <th>Guide Hrs</th><th>Sch Hrs</th><th>Actual Hrs</th>
+          <th>Guide Hrs</th><th>Sch Hrs</th><th>Hours</th>
           <th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>SPLH</th>
         </tr>
       </thead>
@@ -336,7 +336,7 @@ tbody tr.highlight { background: #f5efe9; }
     <div class="section-header">
       <div class="icon icon-catering">🎯</div>
       <h2>Catering Rack &amp; Stack</h2>
-      <div class="section-sub">{REPORT_PERIOD} – {N}-Wk Totals, Ranked by Catering $</div>
+      <div class="section-sub">{REPORT_PERIOD} – Ranked by Catering $</div>
     </div>
     <table>
       <thead>

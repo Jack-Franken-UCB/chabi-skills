@@ -245,13 +245,13 @@ Follow the S3 "Teal Thread" design from `references/html_template.md`.
 3. **System Summary**: GM-style narrative paragraph with key data points
 4. **System Performance Trends**: Weekly breakdown table (newest week first) with:
    - Sales, SSS%, Orders, SST%, Avg Ticket
-   - Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor%, SPLH
+   - Guide Hrs, Hours, vs Guide #, vs Guide %, Labor%
    - Catering
-   - 4-week total row at bottom
+   - N-week total row at bottom
 5. **Sales Rack & Stack**: Ranked table + AI Insight callout
-   - Columns: Rank, Location, 4-Wk Sales, SSS%, Orders, SST%, Avg Ticket, Tkt Chg, Catering, Basis
+   - Columns: Rank, Location, Sales, SSS%, Orders, SST%, Avg Ticket, Tkt Chg, Catering, Basis
 6. **Labor Rack & Stack**: Ranked table + AI Insight callout
-   - Columns: Rank, Location, 4-Wk Sales, Guide Hrs, Sch Hrs, Actual Hrs, vs Guide #, vs Guide %, Labor%, SPLH
+   - Columns: Rank, Location, Sales, Guide Hrs, Sch Hrs, Hours, vs Guide #, vs Guide %, Labor%, SPLH
 7. **Reviews Rack & Stack**: Ranked table + AI Insight callout
    - Columns: Rank, Location, Google, #, Ovation, #, Yelp, #, Wtd Avg, Total #
 8. **Catering Rack & Stack**: Ranked table + AI Insight callout

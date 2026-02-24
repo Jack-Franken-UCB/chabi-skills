@@ -75,6 +75,8 @@ def kpi_badge(v, suffix="vs PY"):
     arrow = "&#9650;" if v >= 0 else "&#9660;"
     sign = "+" if v >= 0 else ""
     return f'<div class="kpi-change {cls}">{arrow} {sign}{v:.1f}% {suffix}</div>'
+def kpi_badge_plain(text, cls="neutral"):
+    return f'<div class="kpi-change {cls}">{text}</div>'
 def wk_short(w): return w.strftime("%b %-d")
 def wk_long(w):
     e = w + timedelta(days=6)
@@ -458,7 +460,7 @@ for loc in LOCATIONS:
         "cat_amt": total_cat_amt, "cat_ords": total_cat_ords, "cat_py_amt": total_cat_py, "cat_vs_py": cat_vs_py,
         "google_r": google_r, "google_n": google_n, "ovation_r": ovation_r, "ovation_n": ovation_n,
         "yelp_r": yelp_r, "yelp_n": yelp_n, "wavg_rating": wavg, "total_rev_n": total_rev_n,
-        "suffix": "vs PY" if has_py else "Non-Comp",
+        "suffix": "Comp" if has_py else "New",
     }
 
 # ============================================================
@@ -585,7 +587,6 @@ for ws_i in WEEK_STARTS:
     sst_w = pct_chg(comp_ords_w, sw["comp_ords_py"]) if sw["comp_ords_py"] else None
     tkt_w = sw["amount"]/sw["orders"] if sw["orders"] else 0
     lp_w = (sw["labor_pay"]/sw["amount"]*100) if sw["amount"] else 0
-    splh_w = sw["amount"]/sw["labor_hrs"] if sw["labor_hrs"] else 0
     vs_g = sw["labor_hrs"]-sw["guide"]
     is_cw = ws_i == WS
     style = ' class="highlight"' if is_cw else ''
@@ -593,19 +594,19 @@ for ws_i in WEEK_STARTS:
     trends_rows += (f'<tr{style}><td>{b(wk_short(ws_i))}</td><td>{b(fm(sw["amount"]))}</td>'
         f'<td>{pill_sss(sss_w)}</td><td>{b(fn(sw["orders"]))}</td><td>{pill_sss(sst_w)}</td>'
         f'<td>{b(fm(tkt_w,2))}</td>'
-        f'<td>{b(fn(sw["guide"],0))}</td><td>{b(fn(sw["sch_hrs"],0))}</td>'
+        f'<td>{b(fn(sw["guide"],0))}</td>'
         f'<td>{b(fn(sw["labor_hrs"],0))}</td><td>{pill_labor_diff(vs_g)}</td>'
         f'<td>{pill_labor_ratio(sw["labor_hrs"],sw["guide"])}</td><td>{pill_labor_pct(lp_w)}</td>'
-        f'<td>{b(fm(splh_w,2))}</td><td>{b(fm(sw["cat_amt"]))}</td></tr>')
+        f'<td>{b(fm(sw["cat_amt"]))}</td></tr>')
 
 # 4-week total row
 trends_rows += (f'<tr class="total-row"><td><strong>4-Wk Total</strong></td><td><strong>{fm(sys_amt)}</strong></td>'
     f'<td>{pill_sss(sys_sss)}</td><td><strong>{fn(sys_ords)}</strong></td><td>{pill_sss(sys_sst)}</td>'
     f'<td><strong>{fm(sys_tkt,2)}</strong></td>'
-    f'<td><strong>{fn(sys_guide,0)}</strong></td><td><strong>{fn(sys_sch,0)}</strong></td>'
+    f'<td><strong>{fn(sys_guide,0)}</strong></td>'
     f'<td><strong>{fn(sys_hrs,0)}</strong></td><td>{pill_labor_diff(sys_hrs-sys_guide)}</td>'
     f'<td>{pill_labor_ratio(sys_hrs,sys_guide)}</td><td>{pill_labor_pct(sys_lp)}</td>'
-    f'<td><strong>{fm(sys_splh,2)}</strong></td><td><strong>{fm(sys_cat)}</strong></td></tr>')
+    f'<td><strong>{fm(sys_cat)}</strong></td></tr>')
 
 # ============================================================
 # RACK & STACK ROWS
@@ -623,7 +624,7 @@ for loc,val,rk in sales_ranks:
 sales_rs_rows += (f'<tr class="total-row"><td></td><td>SYSTEM</td><td>{fm(sys_amt)}</td>'
     f'<td>{pill_sss(sys_sss)}</td><td>{fn(sys_ords)}</td><td>{pill_sss(sys_sst)}</td>'
     f'<td>{fm(sys_tkt,2)}</td><td>{pill_sss(sys_tkt_chg)}</td>'
-    f'<td>{fm(sys_cat)}</td><td><span class="pill pill-neutral">Comp Only</span></td></tr>')
+    f'<td>{fm(sys_cat)}</td><td><span class="pill pill-neutral">Comp</span></td></tr>')
 
 # Labor R&S
 labor_rs_rows = ""
@@ -782,19 +783,19 @@ html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <div class="report-container">
 <div class="header header-b3 b3-v5"><div class="b3-bar-top"></div><div class="header-b-inner"><div class="header-b3-tag">4-WEEK CONSOLIDATED RACK &amp; STACK</div><h1>Fuego Tortilla Grill</h1><div class="header-b3-meta"><span class="header-b3-pill">All 6 Locations</span><span class="header-b3-dot">&bull;</span><span>{REPORT_PERIOD}</span></div></div><div class="b3-bar-bottom"></div></div>
 <div class="kpi-row">
-<div class="kpi-card"><div class="kpi-label">4-Wk System Sales</div><div class="kpi-value">{fm(sys_amt)}</div>{kpi_badge(sys_sss,"vs PY Comps")}</div>
-<div class="kpi-card"><div class="kpi-label">System Orders</div><div class="kpi-value">{fn(sys_ords)}</div>{kpi_badge(sys_sst,"vs PY Comps")}</div>
-<div class="kpi-card"><div class="kpi-label">Avg Ticket</div><div class="kpi-value">{fm(sys_tkt,2)}</div>{kpi_badge(sys_tkt_chg,"vs PY Comps")}</div>
-<div class="kpi-card"><div class="kpi-label">System Labor %</div><div class="kpi-value">{sys_lp:.1f}%</div><div class="kpi-change {'positive' if sys_lp<25 else 'negative'}">{fm(sys_pay)} total</div></div>
-<div class="kpi-card"><div class="kpi-label">4-Wk Catering</div><div class="kpi-value">{fm(sys_cat)}</div><div class="kpi-change neutral">{fn(sys_cat_ords,0)} orders</div></div>
+<div class="kpi-card"><div class="kpi-label">System Sales</div><div class="kpi-value">{fm(sys_amt)}</div>{kpi_badge(sys_sss,"SSS (Comp)")}</div>
+<div class="kpi-card"><div class="kpi-label">System Orders</div><div class="kpi-value">{fn(sys_ords)}</div>{kpi_badge(sys_sst,"SST (Comp)")}</div>
+<div class="kpi-card"><div class="kpi-label">Avg Ticket</div><div class="kpi-value">{fm(sys_tkt,2)}</div>{kpi_badge(sys_tkt_chg,"vs PY (Comp)")}</div>
+<div class="kpi-card"><div class="kpi-label">System Labor %</div><div class="kpi-value">{sys_lp:.1f}%</div>{kpi_badge_plain(f"{sys_hrs/sys_guide*100:.1f}% of Guide" if sys_guide else "—","positive" if sys_hrs<=sys_guide else "negative" if sys_hrs/sys_guide>1.05 else "neutral")}</div>
+<div class="kpi-card"><div class="kpi-label">Catering</div><div class="kpi-value">{fm(sys_cat)}</div>{kpi_badge_plain("System Total","neutral")}</div>
 </div>
-<div class="gm-message"><div class="gm-label">System Summary — 4-Week Consolidated View</div>{gm_msg}</div>
-<div class="section"><div class="section-header"><div class="icon icon-sales">&#128202;</div><h2>System Performance Trends</h2><div class="section-sub">Weekly Breakdown – All Locations Combined</div></div><table><thead><tr><th>Week</th><th>Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th><th>Avg Tkt</th><th>Guide Hrs</th><th>Sch Hrs</th><th>Actual Hrs</th><th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>SPLH</th><th>Catering</th></tr></thead><tbody>{trends_rows}</tbody></table></div>
-<div class="section"><div class="section-header"><div class="icon icon-sales">&#128176;</div><h2>Sales Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – 4-Wk Totals, Ranked by Sales</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>4-Wk Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th><th>Avg Ticket</th><th>Tkt Chg</th><th>Catering</th><th>Basis</th></tr></thead><tbody>{sales_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{sales_callout}</div></div>
-<div class="section"><div class="section-header"><div class="icon icon-labor">&#128101;</div><h2>Labor Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – 4-Wk Totals, Ranked by vs Guide %</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>4-Wk Sales</th><th>Guide Hrs</th><th>Sch Hrs</th><th>Actual Hrs</th><th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>SPLH</th></tr></thead><tbody>{labor_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{labor_callout}</div></div>
+<div class="gm-message"><div class="gm-label">System Summary</div>{gm_msg}</div>
+<div class="section"><div class="section-header"><div class="icon icon-sales">&#128202;</div><h2>System Performance Trends</h2><div class="section-sub">Last 4 Weeks – All Locations Combined</div></div><table><thead><tr><th>Week</th><th>Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th><th>Avg Tkt</th><th>Guide Hrs</th><th>Hours</th><th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>Catering</th></tr></thead><tbody>{trends_rows}</tbody></table></div>
+<div class="section"><div class="section-header"><div class="icon icon-sales">&#128176;</div><h2>Sales Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by Sales</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Sales</th><th>SSS %</th><th>Orders</th><th>SST %</th><th>Avg Ticket</th><th>Tkt Chg</th><th>Catering</th><th>Basis</th></tr></thead><tbody>{sales_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{sales_callout}</div></div>
+<div class="section"><div class="section-header"><div class="icon icon-labor">&#128101;</div><h2>Labor Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by vs Guide %</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Sales</th><th>Guide Hrs</th><th>Sch Hrs</th><th>Hours</th><th>vs Guide #</th><th>vs Guide %</th><th>Labor %</th><th>SPLH</th></tr></thead><tbody>{labor_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{labor_callout}</div></div>
 <div class="section"><div class="section-header"><div class="icon icon-reviews">&#11088;</div><h2>Reviews Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by Weighted Avg Rating</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Google</th><th>#</th><th>Ovation</th><th>#</th><th>Yelp</th><th>#</th><th>Wtd Avg</th><th>Total #</th></tr></thead><tbody>{reviews_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{reviews_callout}</div></div>
-<div class="section"><div class="section-header"><div class="icon icon-catering">&#127919;</div><h2>Catering Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – 4-Wk Totals, Ranked by Catering $</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Orders</th><th>Cat $</th><th>Cat $ PY</th><th>vs PY</th></tr></thead><tbody>{cat_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{catering_callout}</div></div>
-<div class="footer">Generated on {TODAY_STR} &middot; Fuego Tortilla Grill – 4-Week Consolidated Report &middot; Data sourced from Chabi Analytics</div>
+<div class="section"><div class="section-header"><div class="icon icon-catering">&#127919;</div><h2>Catering Rack &amp; Stack</h2><div class="section-sub">{REPORT_PERIOD} – Ranked by Catering $</div></div><table><thead><tr><th>Rank</th><th>Location</th><th>Orders</th><th>Cat $</th><th>Cat $ PY</th><th>vs PY</th></tr></thead><tbody>{cat_rs_rows}</tbody></table><div class="ai-callout"><div class="ai-label">&#129302; AI Insight</div>{catering_callout}</div></div>
+<div class="footer">Generated on {TODAY_STR} &middot; Fuego Tortilla Grill – System Report &middot; Data sourced from Chabi Analytics</div>
 </div></body></html>"""
 
 # ============================================================
