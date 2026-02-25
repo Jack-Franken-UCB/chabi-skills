@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Cost & Inventory — Waco | Feb 17–23, 2026</title>
+<style>
+  @page { size: letter; margin: 0; }
+  :root {
+    --fuego-tan: #f5efe9;
+    --fuego-brown: #4a3728;
+    --fuego-teal: #4a8e8b;
+    --fuego-teal-lt: #e8f1f0;
+    --fuego-gold: #d4a843;
+    --card-bg: #ffffff;
+    --border: #e4dbd1;
+    --text: #3a2e25;
+    --text-secondary: #8b7b6b;
+    --red: #c0392b;
+    --red-bg: #fdecea;
+    --green: #1e8449;
+    --green-bg: #eafaf1;
+    --orange: #d4780a;
+    --orange-bg: #fef5e7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 9px;
+    color: var(--text);
+    background: var(--fuego-tan);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    width: 8.5in;
+    min-height: 11in;
+    padding: 20px 24px;
+  }
+
+  /* ── HEADER (matches flash report) ── */
+  .header {
+    background: var(--fuego-brown);
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .header .sub { color: #c9b99a; font-size: 9px; margin-top: 2px; }
+  .header .period { color: rgba(201,185,154,.7); font-size: 8px; margin-top: 3px; }
+  .loc-badge {
+    background: var(--fuego-teal);
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ── GM MESSAGE (matches flash border-left style) ── */
+  .gm-msg {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--fuego-teal);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+  }
+  .gm-label {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #5a9e9b;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .gm-headline { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 5px; line-height: 1.3; }
+  .gm-story { font-size: 8.5px; line-height: 1.5; color: #5a4a3a; margin-bottom: 6px; }
+  .gm-ask {
+    background: var(--fuego-teal-lt);
+    border-left: 3px solid var(--fuego-teal);
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    font-size: 8.5px;
+    font-weight: 600;
+    color: #3a7572;
+    line-height: 1.45;
+  }
+
+  /* ── ANNUALIZED IMPACT ── */
+  .annual {
+    background: linear-gradient(135deg, var(--red) 0%, #a93226 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .annual .val { font-size: 22px; font-weight: 800; white-space: nowrap; letter-spacing: -0.5px; }
+  .annual .val span { font-size: 11px; opacity: .7; }
+  .annual .txt { font-size: 8px; line-height: 1.45; opacity: .92; }
+  .annual .txt strong { color: #ffd; }
+
+  /* ── KPI ROW (matches flash report exactly) ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .kpi-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--fuego-teal);
+  }
+  .kpi-card .kpi-label { font-size: 7.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .kpi-card .kpi-value { font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .kpi-card .kpi-sub { font-size: 8px; color: var(--text-secondary); margin-top: 3px; }
+
+  /* ── PILLS (matches flash report) ── */
+  .pill { display: inline-block; padding: 1px 5px; border-radius: 4px; font-weight: 600; font-size: 7.5px; }
+  .pill-red { color: var(--red); background: var(--red-bg); }
+  .pill-green { color: var(--green); background: var(--green-bg); }
+  .pill-orange { color: var(--orange); background: var(--orange-bg); }
+
+  /* ── SECTIONS (matches flash report) ── */
+  .section {
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 10px;
+    break-inside: avoid;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border);
+    background: #f9f6f3;
+    border-left: 3px solid var(--fuego-teal);
+  }
+  .section-header .icon {
+    width: 20px; height: 20px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; background: var(--fuego-teal-lt); color: var(--fuego-teal);
+  }
+  .section-header h2 { font-size: 10px; font-weight: 700; }
+  .section-header .section-sub { font-size: 7.5px; color: var(--text-secondary); margin-left: auto; }
+
+  /* ── TABLES (matches flash report) ── */
+  table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+  thead th {
+    padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-secondary);
+    border-bottom: 2px solid var(--border); white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td { padding: 4px 6px; text-align: right; border-bottom: 1px solid #ede7e0; white-space: nowrap; }
+  tbody td:first-child { text-align: left; }
+  tbody tr:nth-child(even) { background: #fdfbf8; }
+  .total-row { background: var(--fuego-tan); font-weight: 700; }
+  .total-row td { border-top: 2px solid var(--border); }
+
+  /* ── INVENTORY FLOW ── */
+  .inv-flow {
+    display: flex; align-items: center; justify-content: center; gap: 0;
+    padding: 10px 12px; background: var(--card-bg); border-radius: 8px;
+    border: 1px solid var(--border); margin-bottom: 10px;
+  }
+  .inv-node { text-align: center; padding: 8px 14px; border-radius: 6px; min-width: 100px; }
+  .inv-node.st { background: var(--fuego-teal-lt); }
+  .inv-node.pu { background: var(--green-bg); }
+  .inv-node.us { background: var(--red-bg); }
+  .inv-node.en { background: var(--fuego-teal-lt); }
+  .inv-node .nl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-secondary); font-weight: 600; }
+  .inv-node .nv { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .inv-arrow { font-size: 16px; color: #b8a898; padding: 0 6px; }
+
+  /* ── TWO-COLUMN LAYOUT ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+  /* ── LOCATION COMPARISON ── */
+  .loc-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; padding: 10px 12px; }
+  .lc { text-align: center; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border); }
+  .lc.me { border: 2px solid var(--fuego-teal); background: var(--fuego-teal-lt); }
+  .lc .lc-name { font-size: 7px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
+  .lc .lc-pct { font-size: 14px; font-weight: 700; margin: 2px 0; }
+  .lc .lc-var { font-size: 7.5px; font-weight: 600; }
+  .lc .lc-rank { font-size: 7px; color: var(--text-secondary); }
+
+  /* ── SCORECARD ── */
+  .scorecard { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 8px 12px; }
+  .sc { text-align: center; padding: 6px 3px; border-radius: 6px; }
+  .sc.ok { background: var(--green-bg); }
+  .sc.warn { background: var(--orange-bg); }
+  .sc.bad { background: var(--red-bg); }
+  .sc .sc-icon { font-size: 11px; }
+  .sc .sc-name { font-size: 6.5px; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-secondary); font-weight: 600; }
+  .sc .sc-val { font-size: 10px; font-weight: 700; margin-top: 1px; }
+
+  /* ── PARETO ── */
+  .pareto-bar { display: flex; height: 24px; border-radius: 5px; overflow: hidden; margin: 8px 12px 4px; }
+  .pareto-seg { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 7px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+  .pareto-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 3px 12px 10px; font-size: 7.5px; color: var(--text-secondary); }
+  .pareto-legend span { display: flex; align-items: center; gap: 3px; }
+  .pareto-legend .dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── INVENTORY EQUATION CARDS ── */
+  .ieq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 12px; }
+  .ieq { border: 1px solid var(--border); border-radius: 6px; padding: 10px; border-top: 3px solid var(--red); }
+  .ieq-name { font-size: 10px; font-weight: 700; margin-bottom: 6px; }
+  .ieq-price { font-size: 7.5px; color: var(--text-secondary); margin-bottom: 6px; }
+  .ieq-row { display: flex; justify-content: space-between; font-size: 8px; padding: 2px 0; color: var(--text-secondary); }
+  .ieq-row span:last-child { font-weight: 600; color: var(--text); }
+  .ieq-div { border-top: 1px dashed var(--border); margin: 4px 0; }
+  .ieq-res { display: flex; justify-content: space-between; font-size: 9px; font-weight: 700; padding: 2px 0; }
+  .ieq-res.theo { color: var(--fuego-teal); }
+  .ieq-verdict { text-align: center; margin-top: 6px; padding: 4px; border-radius: 5px; font-size: 8px; font-weight: 700; background: var(--red-bg); color: var(--red); }
+  .ieq-q { font-size: 7.5px; color: var(--text-secondary); text-align: center; margin-top: 4px; font-style: italic; }
+
+  /* ── FIX SIMULATOR ── */
+  .sim { padding: 10px 12px; }
+  .sim-title { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--fuego-teal); font-weight: 700; margin-bottom: 6px; }
+  .sim-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .sim-label { min-width: 100px; font-size: 8px; font-weight: 600; }
+  .sim-bar-wrap { flex: 1; height: 16px; background: #f0ebe5; border-radius: 4px; overflow: hidden; }
+  .sim-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 6px; font-size: 8px; font-weight: 700; color: #fff; }
+  .sim-pct { min-width: 32px; text-align: right; font-weight: 700; font-size: 9px; }
+  .sim-note { font-size: 7px; color: var(--text-secondary); margin-top: 4px; font-style: italic; }
+
+  /* ── TREND ── */
+  .trend-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 12px; }
+  .tc { text-align: center; padding: 8px 4px; border-radius: 6px; border: 1px solid var(--border); }
+  .tc .tw { font-size: 7px; color: var(--text-secondary); font-weight: 600; }
+  .tc .tp { font-size: 16px; font-weight: 700; margin: 2px 0; }
+  .tc .td { font-size: 7px; color: var(--text-secondary); }
+  .tc .tv { font-size: 8px; font-weight: 600; margin-top: 2px; }
+
+  /* ── WINS ── */
+  .wins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 8px 12px; }
+  .win { display: flex; gap: 6px; padding: 5px 8px; background: var(--green-bg); border-radius: 5px; align-items: center; font-size: 8px; }
+  .win b { color: var(--green); }
+
+  /* ── ACTION ITEMS (clear checklist) ── */
+  .actions { padding: 8px 12px; }
+  .act {
+    display: flex; gap: 10px; padding: 8px 10px;
+    background: var(--fuego-tan); border-radius: 6px;
+    margin-bottom: 6px; border-left: 4px solid transparent;
+    align-items: flex-start;
+    break-inside: avoid;
+  }
+  .act.c { border-left-color: var(--red); }
+  .act.w { border-left-color: var(--orange); }
+  .act.i { border-left-color: var(--fuego-teal); }
+  .act-check {
+    width: 16px; height: 16px; border: 2px solid var(--border);
+    border-radius: 4px; flex-shrink: 0; margin-top: 1px;
+  }
+  .act-content { flex: 1; }
+  .act-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .act-pri { font-size: 7px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
+  .act-pri.crit { color: var(--red); }
+  .act-pri.warn { color: var(--orange); }
+  .act-pri.inf { color: var(--fuego-teal); }
+  .act-impact { font-size: 7.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+  .act-impact.high { background: var(--red-bg); color: var(--red); }
+  .act-impact.med { background: var(--orange-bg); color: var(--orange); }
+  .act-impact.low { background: var(--fuego-teal-lt); color: var(--fuego-teal); }
+  .act-title { font-size: 9.5px; font-weight: 700; margin-bottom: 2px; }
+  .act-desc { font-size: 7.5px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 4px; }
+  .act-steps {
+    font-size: 7.5px; color: var(--text); background: var(--card-bg);
+    border-radius: 4px; padding: 5px 8px; line-height: 1.5;
+    border: 1px solid var(--border);
+  }
+  .act-steps strong { color: var(--fuego-teal); }
+
+  .footer { text-align: center; padding: 10px; font-size: 7px; color: var(--text-secondary); }
+  .ud { font-size: 7px; color: var(--text-secondary); display: block; }
+
+  /* ── PAGE BREAK ── */
+  .page-break { break-before: page; padding-top: 10px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════  PAGE 1  ═══════════════════════ -->
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>Food Cost &amp; Inventory Report</h1>
+    <div class="sub">Fuego Tortilla Grill — MarginEdge Analysis</div>
+    <div class="period">Week of February 17 – 23, 2026</div>
+  </div>
+  <div class="loc-badge">Waco</div>
+</div>
+
+<!-- GM MESSAGE -->
+<div class="gm-msg">
+  <div class="gm-label">Message to General Manager</div>
+  <div class="gm-headline">Food cost spiked to 31.1% — beef variance alone cost $1,198 this week.</div>
+  <div class="gm-story">Revenue was flat at $50.3K vs last week, so this is a usage and inventory problem — not a sales shortfall. Three beef items (Brisket -$533, Sirloin -$460, Skirt Steak -$205) account for 52% of total negative variance. A cheese recipe mapping error adds another $357 in phantom variance every week. Waco ranked #5 of 6 locations; only Burleson (32.5%) was worse. The good news: Tomatoes, Eggs, Pepper Jack, and Bacon all ran favorable — portioning discipline is strong on those items.</div>
+  <div class="gm-ask">📋 <strong>Your Ask:</strong> Recount all beef in the walk-in today and update MarginEdge ending inventory. Fix the Monterey Jack shredded ↔ loaf recipe mapping (5 min). If beef counts are accurate, schedule a portioning observation on the brisket station by Friday.</div>
+</div>
+
+<!-- ANNUALIZED IMPACT -->
+<div class="annual">
+  <div class="val">-$119K<span>/yr</span></div>
+  <div class="txt">At -$2,305/week, this annualizes to <strong>$119,886 in lost product margin</strong>. Fixing the top 3 issues (beef recount + cheese mapping + recipe updates) could recover ~$1,775/wk — <strong>$92,300/year back to your bottom line</strong>.</div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-label">Actual Food Cost</div>
+    <div class="kpi-value" style="color:var(--red)">31.1%</div>
+    <div class="kpi-sub">Prior Wk 29.0% <span class="pill pill-red">+2.1 pts</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total COGS (Used)</div>
+    <div class="kpi-value">$15,669</div>
+    <div class="kpi-sub">Revenue $50,346</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total Variance</div>
+    <div class="kpi-value" style="color:var(--red)">-$2,305</div>
+    <div class="kpi-sub">Prior Wk -$1,330 <span class="pill pill-red">↑73%</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Ending Inventory</div>
+    <div class="kpi-value">$9,291</div>
+    <div class="kpi-sub">Start $10,565 <span class="pill pill-orange">-12.1%</span></div>
+  </div>
+</div>
+
+<!-- INVENTORY FLOW -->
+<div class="inv-flow">
+  <div class="inv-node st"><div class="nl">Starting Inv</div><div class="nv">$10,565</div></div>
+  <div class="inv-arrow">+</div>
+  <div class="inv-node pu"><div class="nl">Purchased</div><div class="nv" style="color:var(--green)">$14,395</div></div>
+  <div class="inv-arrow">−</div>
+  <div class="inv-node us"><div class="nl">Used (COGS)</div><div class="nv" style="color:var(--red)">$15,669</div></div>
+  <div class="inv-arrow">=</div>
+  <div class="inv-node en"><div class="nl">Ending Inv</div><div class="nv">$9,291</div></div>
+</div>
+
+<!-- TWO-COLUMN: SCORECARD + LOCATION COMPARISON -->
+<div class="two-col">
+  <!-- SCORECARD -->
+  <div class="section">
+    <div class="section-header">
+      <div class="icon">📊</div>
+      <h2>Category Scorecard</h2>
+      <div class="section-sub">Scan in 5 seconds</div>
+    </div>
+    <div class="scorecard">
+      <div class="sc bad"><div class="sc-icon">🔴</div><div class="sc-name">Meat</div><div class="sc-val">39.7%</div></div>
+      <div class="sc bad"><div class="sc-icon">🔴</div><div class="sc-name">Dry Gds</div><div class="sc-val">34.1%</div></div>
+      <div class="sc bad"><div class="sc-icon">🔴</div><div class="sc-name">Seafood</div><div class="sc-val">32.5%</div></div>
+      <div class="sc warn"><div class="sc-icon">🟡</div><div class="sc-name">NA Bev</div><div class="sc-val">31.0%</div></div>
+      <div class="sc warn"><div class="sc-icon">🟡</div><div class="sc-name">Frozen</div><div class="sc-val">29.7%</div></div>
+      <div class="sc warn"><div class="sc-icon">🟡</div><div class="sc-name">Poultry</div><div class="sc-val">24.9%</div></div>
+      <div class="sc ok"><div class="sc-icon">🟢</div><div class="sc-name">Dairy</div><div class="sc-val">24.1%</div></div>
+      <div class="sc ok"><div class="sc-icon">🟢</div><div class="sc-name">Produce</div><div class="sc-val">22.2%</div></div>
+    </div>
+  </div>
+
+  <!-- FIX SIMULATOR -->
+  <div class="section">
+    <div class="section-header">
+      <div class="icon">🔧</div>
+      <h2>Fix Impact Simulator</h2>
+      <div class="section-sub">What if you fix it?</div>
+    </div>
+    <div class="sim">
+      <div class="sim-row"><div class="sim-label">Current State</div><div class="sim-bar-wrap"><div class="sim-bar" style="width:78%;background:var(--red)">31.1%</div></div><div class="sim-pct" style="color:var(--red)">31.1%</div></div>
+      <div class="sim-row"><div class="sim-label">+ Fix Beef Recount</div><div class="sim-bar-wrap"><div class="sim-bar" style="width:72%;background:var(--orange)">28.7%</div></div><div class="sim-pct" style="color:var(--orange)">28.7%</div></div>
+      <div class="sim-row"><div class="sim-label">+ Fix Cheese Map</div><div class="sim-bar-wrap"><div class="sim-bar" style="width:70%;background:#e8a838">28.0%</div></div><div class="sim-pct" style="color:var(--orange)">28.0%</div></div>
+      <div class="sim-row"><div class="sim-label">+ Update Recipes</div><div class="sim-bar-wrap"><div class="sim-bar" style="width:68%;background:var(--green)">27.5%</div></div><div class="sim-pct" style="color:var(--green)">27.5%</div></div>
+      <div class="sim-note">Simulated by removing correctable variance. Target: &lt;28%.</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOCATION COMPARISON -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">📍</div>
+    <h2>System-Wide Comparison</h2>
+    <div class="section-sub">Same Week · All Locations</div>
+  </div>
+  <div class="loc-grid">
+    <div class="lc"><div class="lc-name">San Marcos</div><div class="lc-pct" style="color:var(--green)">27.0%</div><div class="lc-var" style="color:var(--green)">+$195</div><div class="lc-rank">🥇 Best</div></div>
+    <div class="lc"><div class="lc-name">College Stn</div><div class="lc-pct" style="color:var(--green)">27.6%</div><div class="lc-var" style="color:var(--red)">-$613</div><div class="lc-rank">#2</div></div>
+    <div class="lc"><div class="lc-name">San Antonio</div><div class="lc-pct" style="color:var(--green)">28.3%</div><div class="lc-var" style="color:var(--red)">-$962</div><div class="lc-rank">#3</div></div>
+    <div class="lc"><div class="lc-name">Fayetteville</div><div class="lc-pct" style="color:var(--orange)">30.9%</div><div class="lc-var" style="color:var(--red)">-$730</div><div class="lc-rank">#4</div></div>
+    <div class="lc me"><div class="lc-name">★ WACO</div><div class="lc-pct" style="color:var(--red)">31.1%</div><div class="lc-var" style="color:var(--red)">-$2,305</div><div class="lc-rank">#5 of 6</div></div>
+    <div class="lc"><div class="lc-name">Burleson</div><div class="lc-pct" style="color:var(--red)">32.5%</div><div class="lc-var" style="color:var(--red)">-$1,126</div><div class="lc-rank">Worst</div></div>
+  </div>
+</div>
+
+<!-- VARIANCE PARETO -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">📉</div>
+    <h2>Variance Pareto</h2>
+    <div class="section-sub">Top 7 items = 85% of negative variance</div>
+  </div>
+  <div class="pareto-bar">
+    <div class="pareto-seg" style="width:23%;background:#a93226">Brisket</div>
+    <div class="pareto-seg" style="width:20%;background:#c0392b">Sirloin</div>
+    <div class="pareto-seg" style="width:15.5%;background:#d35400">Cheese</div>
+    <div class="pareto-seg" style="width:9%;background:#e67e22">Skirt</div>
+    <div class="pareto-seg" style="width:6.7%;background:#f39c12">Tom Can</div>
+    <div class="pareto-seg" style="width:5.7%;background:#d4a843">Chips</div>
+    <div class="pareto-seg" style="width:5.3%;background:#b8860b">Chk BL</div>
+    <div class="pareto-seg" style="width:14.8%;background:#8b7b6b">Other</div>
+  </div>
+  <div class="pareto-legend">
+    <span><span class="dot" style="background:#a93226"></span>Brisket $533 (23%)</span>
+    <span><span class="dot" style="background:#c0392b"></span>Sirloin $460 (20%)</span>
+    <span><span class="dot" style="background:#d35400"></span>Cheese MJ $357 (15%)</span>
+    <span><span class="dot" style="background:#e67e22"></span>Skirt Steak $205 (9%)</span>
+    <span><span class="dot" style="background:#f39c12"></span>Canned Tom $154 (7%)</span>
+    <span><span class="dot" style="background:#d4a843"></span>Chips $131 (6%)</span>
+    <span><span class="dot" style="background:#b8860b"></span>Chicken BL $122 (5%)</span>
+    <span><span class="dot" style="background:#8b7b6b"></span>All Other $343 (15%)</span>
+  </div>
+</div>
+
+<!-- TOP 3 INVENTORY EQUATIONS -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">🔍</div>
+    <h2>Top 3 Offenders — Inventory Equation</h2>
+    <div class="section-sub">Start + Purchased − Ending = Used vs Theoretical</div>
+  </div>
+  <div class="ieq-grid">
+    <div class="ieq">
+      <div class="ieq-name">🥩 Beef, Brisket</div>
+      <div class="ieq-price">@ $12.89/lb · Highest $/lb item</div>
+      <div class="ieq-row"><span>Starting</span><span>48.5 lb</span></div>
+      <div class="ieq-row"><span>+ Purchased</span><span>102.1 lb</span></div>
+      <div class="ieq-row"><span>− Ending</span><span>28.0 lb</span></div>
+      <div class="ieq-div"></div>
+      <div class="ieq-res"><span>= Actual Used</span><span>122.6 lb</span></div>
+      <div class="ieq-res theo"><span>Theoretical</span><span>81.3 lb</span></div>
+      <div class="ieq-verdict">-41.3 lb / -$533</div>
+      <div class="ieq-q">❓ Was 28.0 lb ending count verified by scale?</div>
+    </div>
+    <div class="ieq">
+      <div class="ieq-name">🥩 Beef, Sirloin/Chuck</div>
+      <div class="ieq-price">@ $6.09/lb · High starting inventory</div>
+      <div class="ieq-row"><span>Starting</span><span>209.3 lb</span></div>
+      <div class="ieq-row"><span>+ Purchased</span><span>49.2 lb</span></div>
+      <div class="ieq-row"><span>− Ending</span><span>120.2 lb</span></div>
+      <div class="ieq-div"></div>
+      <div class="ieq-res"><span>= Actual Used</span><span>138.3 lb</span></div>
+      <div class="ieq-res theo"><span>Theoretical</span><span>62.7 lb</span></div>
+      <div class="ieq-verdict">-75.6 lb / -$460</div>
+      <div class="ieq-q">❓ 75 lb gap — trim waste or miscount at 209 lb?</div>
+    </div>
+    <div class="ieq">
+      <div class="ieq-name">🧀 Cheese, MJ Shredded</div>
+      <div class="ieq-price">@ $2.36/lb · Recipe mapping error</div>
+      <div class="ieq-row"><span>Starting</span><span>14.5 lb</span></div>
+      <div class="ieq-row"><span>+ Purchased</span><span>140.0 lb</span></div>
+      <div class="ieq-row"><span>− Ending</span><span>3.5 lb</span></div>
+      <div class="ieq-div"></div>
+      <div class="ieq-res"><span>= Actual Used</span><span>151.0 lb</span></div>
+      <div class="ieq-res theo"><span>Theoretical</span><span>0 lb ⚠️</span></div>
+      <div class="ieq-verdict">-151 lb / -$357 — ALL phantom</div>
+      <div class="ieq-q">⚠️ POS maps "Loaf" — kitchen uses "Shredded"</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════  PAGE 2  ═══════════════════════ -->
+<div class="page-break"></div>
+
+<!-- 4-WEEK TREND -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">📈</div>
+    <h2>4-Week Trend</h2>
+    <div class="section-sub">Food Cost % &amp; Variance</div>
+  </div>
+  <div class="trend-g">
+    <div class="tc"><div class="tw">Jan 27 – Feb 2</div><div class="tp" style="color:var(--green)">28.5%</div><div class="td">$12,301 / $43,142</div><div class="tv" style="color:var(--red)">Var -$1,270</div></div>
+    <div class="tc"><div class="tw">Feb 3 – 9</div><div class="tp" style="color:var(--orange)">29.1%</div><div class="td">$14,122 / $48,574</div><div class="tv" style="color:var(--red)">Var -$1,712</div></div>
+    <div class="tc"><div class="tw">Feb 10 – 16</div><div class="tp" style="color:var(--green)">29.0%</div><div class="td">$14,619 / $50,353</div><div class="tv" style="color:var(--red)">Var -$1,330</div></div>
+    <div class="tc" style="background:var(--red-bg);border-color:var(--red)"><div class="tw">Feb 17 – 23 ★</div><div class="tp" style="color:var(--red)">31.1%</div><div class="td">$15,669 / $50,346</div><div class="tv" style="color:var(--red)">Var -$2,305</div></div>
+  </div>
+</div>
+
+<!-- CATEGORY TABLE -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">📦</div>
+    <h2>Cost by Category</h2>
+    <div class="section-sub">Actual vs Target</div>
+  </div>
+  <table>
+    <thead><tr><th style="text-align:left">Category</th><th>Used</th><th>Revenue</th><th>Actual %</th><th>Target %</th><th>Gap</th><th>Variance</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left"><strong>Meat</strong></td><td>$5,750</td><td>$14,497</td><td><span class="pill pill-red">39.7%</span></td><td>26.3%</td><td style="color:var(--red)">+13.4</td><td style="color:var(--red);font-weight:700">-$1,042</td></tr>
+      <tr><td style="text-align:left"><strong>Dry Goods</strong></td><td>$2,809</td><td>$8,244</td><td><span class="pill pill-red">34.1%</span></td><td>21.9%</td><td style="color:var(--red)">+12.2</td><td style="color:var(--red)">-$809</td></tr>
+      <tr><td style="text-align:left"><strong>Dairy</strong></td><td>$2,398</td><td>$9,968</td><td><span class="pill pill-green">24.1%</span></td><td>23.3%</td><td style="color:var(--orange)">+0.8</td><td style="color:var(--green)">+$32</td></tr>
+      <tr><td style="text-align:left"><strong>Produce</strong></td><td>$1,591</td><td>$7,154</td><td><span class="pill pill-orange">22.2%</span></td><td>13.6%</td><td style="color:var(--red)">+8.6</td><td style="color:var(--red)">-$40</td></tr>
+      <tr><td style="text-align:left"><strong>Poultry</strong></td><td>$1,129</td><td>$4,530</td><td><span class="pill pill-red">24.9%</span></td><td>13.9%</td><td style="color:var(--red)">+11.0</td><td style="color:var(--red)">-$228</td></tr>
+      <tr><td style="text-align:left"><strong>NA Bev</strong></td><td>$662</td><td>$2,136</td><td><span class="pill pill-orange">31.0%</span></td><td>20.4%</td><td style="color:var(--red)">+10.6</td><td style="color:var(--red)">-$105</td></tr>
+      <tr><td style="text-align:left"><strong>Seafood</strong></td><td>$550</td><td>$1,691</td><td><span class="pill pill-red">32.5%</span></td><td>15.1%</td><td style="color:var(--red)">+17.4</td><td style="color:var(--red)">-$61</td></tr>
+      <tr><td style="text-align:left"><strong>Frozen</strong></td><td>$466</td><td>$1,567</td><td><span class="pill pill-orange">29.7%</span></td><td>16.5%</td><td style="color:var(--red)">+13.2</td><td style="color:var(--red)">-$28</td></tr>
+      <tr class="total-row"><td style="text-align:left">TOTAL</td><td>$15,669</td><td>$50,346</td><td>31.1%</td><td>—</td><td>—</td><td style="color:var(--red)">-$2,305</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ITEM VARIANCE TABLE -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">⚠️</div>
+    <h2>Item Variance Detail</h2>
+    <div class="section-sub">Top 12 by |Variance|</div>
+  </div>
+  <table>
+    <thead><tr><th style="text-align:left">Item</th><th>Cat</th><th>Actual %</th><th>Target %</th><th>Used</th><th>Sold</th><th>Var Units</th><th>Variance $</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left"><strong>Beef, Brisket</strong><span class="ud">@ $12.89/lb</span></td><td>Meat</td><td><span class="pill pill-red">54.3%</span></td><td>36.0%</td><td>122.6 lb</td><td>81.3 lb</td><td style="color:var(--red)">-41.3</td><td style="color:var(--red);font-weight:700">-$533</td></tr>
+      <tr><td style="text-align:left"><strong>Beef, Sirloin/Chuck</strong><span class="ud">@ $6.09/lb</span></td><td>Meat</td><td><span class="pill pill-red">127.3%</span></td><td>57.7%</td><td>138.3 lb</td><td>62.7 lb</td><td style="color:var(--red)">-75.6</td><td style="color:var(--red);font-weight:700">-$460</td></tr>
+      <tr><td style="text-align:left"><strong>Cheese, MJ Shred</strong><span class="ud">⚠️ recipe error</span></td><td>Dairy</td><td><span class="pill pill-red">N/A</span></td><td>—</td><td>151 lb</td><td>0 lb</td><td style="color:var(--red)">-151</td><td style="color:var(--red);font-weight:700">-$357</td></tr>
+      <tr style="background:var(--green-bg)"><td style="text-align:left"><strong>Tomatoes, Fresh</strong><span class="ud">@ $1.06/lb</span></td><td>Produce</td><td><span class="pill pill-green">10.8%</span></td><td>22.4%</td><td>246 lb</td><td>533 lb</td><td style="color:var(--green)">+287</td><td style="color:var(--green);font-weight:700">+$304</td></tr>
+      <tr><td style="text-align:left"><strong>Beef, Skirt Steak</strong><span class="ud">@ $7.01/lb</span></td><td>Meat</td><td><span class="pill pill-red">42.9%</span></td><td>38.4%</td><td>281.7 lb</td><td>252.5 lb</td><td style="color:var(--red)">-29.2</td><td style="color:var(--red);font-weight:700">-$205</td></tr>
+      <tr><td style="text-align:left"><strong>Canned Tomatoes</strong><span class="ud">⚠️ no recipe link</span></td><td>Dry</td><td><span class="pill pill-red">N/A</span></td><td>—</td><td>30 can</td><td>0</td><td style="color:var(--red)">-30</td><td style="color:var(--red);font-weight:700">-$154</td></tr>
+      <tr><td style="text-align:left"><strong>Chips, Tortilla</strong><span class="ud">@ $22.77/case</span></td><td>Dry</td><td><span class="pill pill-red">33.3%</span></td><td>24.6%</td><td>22.0 cs</td><td>16.2 cs</td><td style="color:var(--red)">-5.7</td><td style="color:var(--red);font-weight:700">-$131</td></tr>
+      <tr><td style="text-align:left"><strong>Chicken, Thighs BL</strong><span class="ud">@ $1.50/lb</span></td><td>Poultry</td><td><span class="pill pill-orange">21.8%</span></td><td>17.0%</td><td>453.6 lb</td><td>372.2 lb</td><td style="color:var(--red)">-81.5</td><td style="color:var(--red);font-weight:700">-$122</td></tr>
+      <tr style="background:var(--green-bg)"><td style="text-align:left"><strong>Eggs, Liquid Whole</strong><span class="ud">@ $1.18/lb</span></td><td>Dairy</td><td><span class="pill pill-green">21.0%</span></td><td>25.9%</td><td>426.4 lb</td><td>525.9 lb</td><td style="color:var(--green)">+99.5</td><td style="color:var(--green);font-weight:700">+$117</td></tr>
+      <tr><td style="text-align:left"><strong>Cilantro, Fresh</strong><span class="ud">@ $3.31/lb · spoilage</span></td><td>Produce</td><td><span class="pill pill-red">87.8%</span></td><td>23.0%</td><td>43.5 lb</td><td>11.3 lb</td><td style="color:var(--red)">-32.2</td><td style="color:var(--red);font-weight:700">-$106</td></tr>
+      <tr><td style="text-align:left"><strong>Chicken, Tenders</strong><span class="ud">@ $2.46/lb</span></td><td>Poultry</td><td><span class="pill pill-red">33.0%</span></td><td>24.7%</td><td>168 lb</td><td>126 lb</td><td style="color:var(--red)">-42</td><td style="color:var(--red);font-weight:700">-$103</td></tr>
+      <tr><td style="text-align:left"><strong>Butter, Unsalted</strong><span class="ud">@ $2.36/lb · waste</span></td><td>Dairy</td><td><span class="pill pill-red">92.8%</span></td><td>29.3%</td><td>51.4 lb</td><td>15.5 lb</td><td style="color:var(--red)">-35.9</td><td style="color:var(--red);font-weight:700">-$85</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- WINS -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon">✅</div>
+    <h2>What's Working Well</h2>
+    <div class="section-sub">Positive Variance</div>
+  </div>
+  <div class="wins-grid">
+    <div class="win">✅ <strong>Tomatoes, Fresh</strong> — 10.8% vs 22.4% → <b>+$304</b></div>
+    <div class="win">✅ <strong>Eggs, Liquid Whole</strong> — 21.0% vs 25.9% → <b>+$117</b></div>
+    <div class="win">✅ <strong>Cheese, Pepper Jack</strong> — 22.2% vs 24.1% → <b>+$75</b></div>
+    <div class="win">✅ <strong>Bacon</strong> — 21.1% vs 22.5% → <b>+$69</b></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════  ACTION PLAN  ═══════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="icon" style="background:var(--red-bg);color:var(--red)">☑</div>
+    <h2>Action Plan — This Week's To-Dos</h2>
+    <div class="section-sub">5 Items · Checklist</div>
+  </div>
+  <div class="actions">
+
+    <div class="act c">
+      <div class="act-check"></div>
+      <div class="act-content">
+        <div class="act-top"><div class="act-pri crit">P1 — DO TODAY</div><div class="act-impact high">Up to $1,198</div></div>
+        <div class="act-title">Recount All Beef in Walk-In (Brisket, Sirloin, Skirt Steak)</div>
+        <div class="act-desc">Brisket: 41.3 lb gap (-$533) · Sirloin: 75.6 lb gap (-$460) · Skirt: 29.2 lb gap (-$205)</div>
+        <div class="act-steps"><strong>MarginEdge →</strong> Inventory → Select current period → Find each beef item → Edit Ending Count → Weigh on scale → Enter actual → Save. <strong>Weigh all partials — no estimating.</strong></div>
+      </div>
+    </div>
+
+    <div class="act c">
+      <div class="act-check"></div>
+      <div class="act-content">
+        <div class="act-top"><div class="act-pri crit">P2 — 5 MINUTES</div><div class="act-impact high">$357/week</div></div>
+        <div class="act-title">Fix Cheese Monterey Jack Shredded ↔ Loaf Recipe Mapping</div>
+        <div class="act-desc">Shredded: 151 lb used, $0 revenue. Loaf: 0 lb used, $1,202 revenue. POS says "Loaf" — kitchen uses "Shredded."</div>
+        <div class="act-steps"><strong>MarginEdge →</strong> Recipes → Search items using "MJ Loaf" → Edit ingredient → Change to "MJ Pre-Shredded" → Verify yield → Save.</div>
+      </div>
+    </div>
+
+    <div class="act w">
+      <div class="act-check"></div>
+      <div class="act-content">
+        <div class="act-top"><div class="act-pri warn">P3 — START THIS WEEK</div><div class="act-impact med">$252 visibility</div></div>
+        <div class="act-title">Begin Daily Waste Logging: Cilantro, Butter, French Fries</div>
+        <div class="act-desc">Major usage-vs-sold gaps with zero waste recorded. Logging reveals where product goes.</div>
+        <div class="act-steps"><strong>MarginEdge →</strong> Waste Log → Add Entry → Select product → Enter qty &amp; reason (spoilage/trim/dropped) → Save. <strong>Assign closing manager to log nightly.</strong></div>
+      </div>
+    </div>
+
+    <div class="act w">
+      <div class="act-check"></div>
+      <div class="act-content">
+        <div class="act-top"><div class="act-pri warn">P4 — THIS WEEK</div><div class="act-impact med">$131/week</div></div>
+        <div class="act-title">Audit Tortilla Chip Portioning at Lunch</div>
+        <div class="act-desc">5.7 extra cases at $22.77/case. Over-portioning or unreported refills.</div>
+        <div class="act-steps">Observe chip plating during peak. Verify 2-oz scoop per plate. Ring free refills as $0 modifier for theoretical tracking. Post portion photo at station.</div>
+      </div>
+    </div>
+
+    <div class="act i">
+      <div class="act-check"></div>
+      <div class="act-content">
+        <div class="act-top"><div class="act-pri inf">P5 — BY FRIDAY</div><div class="act-impact low">$220 fix</div></div>
+        <div class="act-title">Map Canned Tomatoes &amp; Chipotle Peppers to MarginEdge Recipes</div>
+        <div class="act-desc">100% usage, $0 revenue — used in salsa/marinades but not linked to POS items.</div>
+        <div class="act-steps"><strong>MarginEdge →</strong> Recipes → Find salsa &amp; marinade recipes → Add "Tomatoes, Whole Can" and "Peppers, Chipotle" as ingredients → Save.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">Generated by Chabi Analytics · MarginEdge Data · Fuego Tortilla Grill · Report Date: February 25, 2026</div>
+
+</body>
+</html>
